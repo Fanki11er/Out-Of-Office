@@ -5,7 +5,7 @@ namespace Out_Of_Office.Server.Data
 {
     public class DataContext :DbContext
     {
-        public DataContext(DbContextOptions<DataContext> options) :base(options)
+        public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
             
         }
@@ -14,5 +14,8 @@ namespace Out_Of_Office.Server.Data
         public DbSet<Project> Projects { get; set; }
         public DbSet<LeaveRequest> LeaveRequests { get; set; }
         public DbSet<ApprovalRequest> ApprovalRequests { get; set; }
+        public DbSet<AbsenceReason> AbsenceReasons { get; set; }
+        public DbSet<ProjectType> ProjectTypes { get; set; }
+        public DbSet<Subdivision> Subdivisions { get; set; }
     }
 }
