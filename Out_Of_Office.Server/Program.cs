@@ -1,8 +1,10 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Out_Of_Office.Server.Data;
 using Out_Of_Office.Server.MiddleWares;
 using Out_Of_Office.Server.Utilities;
+using Out_Of_Office.Server.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,10 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddScoped<DbSeeder, DbSeeder>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+// Add Validators
+
+builder.Services.AddScoped<IValidator, RegisterEmployeeDTOValidator>();
 
 var app = builder.Build();
 
