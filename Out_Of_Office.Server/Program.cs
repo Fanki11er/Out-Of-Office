@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Out_Of_Office.Server.Data;
+using Out_Of_Office.Server.MiddleWares;
 using Out_Of_Office.Server.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,8 @@ var app = builder.Build();
 DatabaseUtilities.CreateDatabase(app);
 
 DatabaseUtilities.SeedDatabase(app);
+
+app.UseMiddleware<ErrorHandlingMiddleWare>();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
