@@ -9,10 +9,10 @@ using System.Text.RegularExpressions;
 
 namespace Out_Of_Office.Server.Validators
 { 
-    public class RegisterUserDTOValidator: AbstractValidator<RegisterEmployeeDTO>
+    public class RegisterEmployeeDTOValidator: AbstractValidator<RegisterEmployeeDTO>
     {
         private readonly DataContext _dataContext;
-        public RegisterUserDTOValidator(DataContext dataContext)
+        public RegisterEmployeeDTOValidator(DataContext dataContext)
         {
             _dataContext = dataContext;
 

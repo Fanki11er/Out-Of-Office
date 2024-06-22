@@ -1,19 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Out_Of_Office.Server.Models;
+using Out_Of_Office.Server.Services;
+
 
 namespace Out_Of_Office.Server.Controllers
 {
-    [Route("/[controller]")]
+    [Route("authentication")]
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class AuthenticationController(IAuthenticationService authenticationService) : ControllerBase
     {
-        private readonly IAuthenticationService _authenticationService;
-
-        public AuthenticationController(IAuthenticationService authenticationService)
-        {
-            _authenticationService = authenticationService;
-        }
+        private readonly IAuthenticationService _authenticationService = authenticationService;
 
         [HttpPost("register")]
         public ActionResult RegisterEmployee(RegisterEmployeeDTO employeeDTO)
@@ -21,5 +17,15 @@ namespace Out_Of_Office.Server.Controllers
             _authenticationService.RegisterEmployee(employeeDTO);
             return Ok();
         }
+
+        [HttpPost("login")]
+
+        public ActionResult<string> LoginEmployee([FromBody] LoginEmployeeDTO employeeDTO) 
+        {
+            var token = _authenticationService.LoginEmployee(employeeDTO);
+
+            return Ok(token);
+        }
+
     }
 }
