@@ -13,7 +13,7 @@ namespace Out_Of_Office.Server.Services
     public interface IAuthenticationService
     {
         public void RegisterEmployee(RegisterEmployeeDTO employeeDTO);
-        public string LoginEmployee(LoginEmployeeDTO employeeDTO);
+        public LoggedEmployeeDTO LoginEmployee(LoginEmployeeDTO employeeDTO);
     }
     public class AuthenticationService(DataContext dataContext, AuthenticationSettings authenticationSettings) : IAuthenticationService
     {
@@ -42,7 +42,7 @@ namespace Out_Of_Office.Server.Services
 
         }
 
-        public string LoginEmployee(LoginEmployeeDTO employeeDTO)
+        public LoggedEmployeeDTO LoginEmployee(LoginEmployeeDTO employeeDTO)
         {
             var employee = _dataContext.Employees
                 .FirstOrDefault(e => e.Login == employeeDTO.Login) ?? 
@@ -54,8 +54,14 @@ namespace Out_Of_Office.Server.Services
             }
 
             var token = CreateToken(employee);
+            var loggedEmployeeDTO = new LoggedEmployeeDTO()
+            {
+                FullName = employee.FullName,
+                Position = employee.Position,
+                Token = token,
+            };
 
-            return token;
+            return loggedEmployeeDTO;
         }
 
         private string CreateToken(Employee employee)

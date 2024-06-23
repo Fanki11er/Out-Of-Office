@@ -46,6 +46,14 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 builder.Services.AddFluentValidationAutoValidation();
 
+builder.Services.AddCors(p => p.AddPolicy("CORS", builder =>
+{
+    builder.WithOrigins("https://localhost:5173")
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials();
+}));
+
 // Add Validators
 
 builder.Services.AddScoped<IValidator, RegisterEmployeeDTOValidator>();
@@ -66,6 +74,7 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
+app.UseCors("CORS");
 
 app.UseHttpsRedirection();
 

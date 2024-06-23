@@ -20,7 +20,7 @@ namespace Out_Of_Office.Server.Controllers
 
         [HttpPost("login")]
 
-        public ActionResult<string> LoginEmployee([FromBody] LoginEmployeeDTO employeeDTO) 
+        public ActionResult<LoggedEmployeeDTO> LoginEmployee([FromBody] LoginEmployeeDTO employeeDTO) 
         {
             var token = _authenticationService.LoginEmployee(employeeDTO);
 

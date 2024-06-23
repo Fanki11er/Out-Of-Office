@@ -1,3 +1,5 @@
 export const routerPaths = {
-  root: "/login",
+  root: "/Login",
+  user: "/User",
+  lists: "/Lists",
 };
