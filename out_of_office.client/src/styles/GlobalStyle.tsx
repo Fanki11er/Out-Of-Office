@@ -41,7 +41,7 @@ button {
 body {
     font-size: ${theme.fontSizes.textNormal};
     font-family: ${theme.defaultFontFamily} ;
-    color: ${theme.colors.lightGray};
+    color: ${theme.colors.black};
     min-height: 100vh;
 }
 
