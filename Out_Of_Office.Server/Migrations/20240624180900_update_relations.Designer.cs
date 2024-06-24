@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Out_Of_Office.Server.Data;
 
@@ -11,9 +12,11 @@ using Out_Of_Office.Server.Data;
 namespace Out_Of_Office.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240624180900_update_relations")]
+    partial class update_relations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,6 +111,9 @@ namespace Out_Of_Office.Server.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PeoplePartnerId")
+                        .IsUnique();
 
                     b.HasIndex("SubdivisionId");
 
@@ -236,11 +242,19 @@ namespace Out_Of_Office.Server.Migrations
 
             modelBuilder.Entity("Out_Of_Office.Server.Entities.Employee", b =>
                 {
+                    b.HasOne("Out_Of_Office.Server.Entities.Employee", "PeoplePartner")
+                        .WithOne()
+                        .HasForeignKey("Out_Of_Office.Server.Entities.Employee", "PeoplePartnerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("Out_Of_Office.Server.Entities.Subdivision", "Subdivision")
                         .WithMany()
                         .HasForeignKey("SubdivisionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("PeoplePartner");
 
                     b.Navigation("Subdivision");
                 });

@@ -29,10 +29,10 @@ namespace Out_Of_Office.Server.Services
                 FullName = employeeDTO.FullName,
                 PasswordHash = passwordHash,
                 Login = employeeDTO.Login,
-                Subdivision = employeeDTO.Subdivision,
+                SubdivisionId = employeeDTO.Subdivision,
                 Position = employeeDTO.Position,
                 Status = employeeDTO.Status,
-                PeoplePartner = employeeDTO.PeoplePartner,
+                PeoplePartnerId = employeeDTO.PeoplePartner,
                 OutOfOfficeBalance = 26,
             };
 

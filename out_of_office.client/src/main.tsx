@@ -7,7 +7,7 @@ import { theme } from "./styles/theme.ts";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AuthProvider from "./providers/AuthProvider.tsx";
-import AppRouter from "./router/Router.tsx";
+import AppRouter from "./router/router.tsx";
 
 const queryClient = new QueryClient();
 

@@ -44,6 +44,12 @@ builder.Services.AddScoped<DbSeeder, DbSeeder>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<IUserContextService, UserContextService>();
+
+builder.Services.AddScoped<IListService, ListsService>();
+
 builder.Services.AddFluentValidationAutoValidation();
 
 builder.Services.AddCors(p => p.AddPolicy("CORS", builder =>
