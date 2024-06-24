@@ -45,6 +45,15 @@ namespace Out_Of_Office.Server.Data
 
                     _dataContext.SaveChanges();
                 }
+
+                if (!_dataContext.Employees.Any())
+                {
+                    var employees = CreateEmployees();
+
+                    _dataContext.AddRange(employees);
+
+                    _dataContext.SaveChanges();
+                }
             }
         }
 
@@ -131,6 +140,25 @@ namespace Out_Of_Office.Server.Data
             };
 
             return subdivisions;
+        }
+
+        private static List<Employee> CreateEmployees()
+        {
+            var employees = new List<Employee>()
+            {
+                new()
+                {
+                    Login =  "DziedzicK",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("12345678"),
+                    FullName = "Krzysztof Dziedzic",
+                    Status = Enums.EStatus.Active,
+                    Position = Enums.EPositions.HRManager,
+                    Subdivision = 1,
+                    PeoplePartner = 1,
+                    OutOfOfficeBalance = 26
+                }
+            };
+            return employees;
         }
     }
 }

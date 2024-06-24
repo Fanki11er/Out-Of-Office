@@ -1,6 +1,6 @@
 @Out_Of_Office.Server_HostAddress = http://localhost:5220
 
-GET {{Out_Of_Office.Server_HostAddress}}/weatherforecast/
+GET {{Out_Of_Office.Server_HostAddress}}/login/
 Accept: application/json
 
 ###
