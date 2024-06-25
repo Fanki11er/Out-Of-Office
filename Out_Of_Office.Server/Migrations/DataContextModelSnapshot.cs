@@ -95,7 +95,7 @@ namespace Out_Of_Office.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PeoplePartnerId")
+                    b.Property<int?>("PeoplePartnerId")
                         .HasColumnType("int");
 
                     b.Property<int>("Position")

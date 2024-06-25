@@ -20,10 +20,10 @@ namespace Out_Of_Office.Server.Services
             List<EmployeeDTO> employeeesDTOs = [];
 
             //var authenticatedUserId = _userContextService.GetUserId();
-            var authenticatedUserId = 1;
+            var authenticatedUserId = 2;
 
             var employees = _dataContext.Employees
-                .Where(emp => emp.PeoplePartnerId == authenticatedUserId && emp.Id != authenticatedUserId)
+                .Where(emp => emp.PeoplePartnerId == authenticatedUserId)
                 .Include(i => i.Subdivision)
             .ToList();
 

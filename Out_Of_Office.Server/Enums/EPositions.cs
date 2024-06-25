@@ -7,5 +7,6 @@ namespace Out_Of_Office.Server.Enums
         Employee = 0,
         ProjectManager = 1,
         HRManager = 2,
+        HRDirector = 3,
     }
 }

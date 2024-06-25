@@ -152,10 +152,20 @@ namespace Out_Of_Office.Server.Data
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("12345678"),
                     FullName = "Krzysztof Dziedzic",
                     Status = Enums.EStatus.Active,
+                    Position = Enums.EPositions.HRDirector,
+                    SubdivisionId = 1,
+                    OutOfOfficeBalance = 26
+                },
+                new()
+                {
+                    Login =  "HRManager1",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("12345678"),
+                    FullName = "Krzysztof Góral",
+                    Status = Enums.EStatus.Active,
                     Position = Enums.EPositions.HRManager,
                     SubdivisionId = 1,
-                    PeoplePartnerId = 1,
-                    OutOfOfficeBalance = 26
+                    OutOfOfficeBalance = 26,
+                    PeoplePartnerId = 1,       
                 },
                 new()
                 {
@@ -165,7 +175,7 @@ namespace Out_Of_Office.Server.Data
                     Status = Enums.EStatus.Active,
                     Position = Enums.EPositions.Employee,
                     SubdivisionId = 1,
-                    PeoplePartnerId = 1,
+                    PeoplePartnerId = 2,
                     OutOfOfficeBalance = 26
                 },
                  new()
@@ -176,7 +186,7 @@ namespace Out_Of_Office.Server.Data
                     Status = Enums.EStatus.Active,
                     Position = Enums.EPositions.Employee,
                     SubdivisionId = 2,
-                    PeoplePartnerId = 1,
+                    PeoplePartnerId = 2,
                     OutOfOfficeBalance = 20
                 }
             };

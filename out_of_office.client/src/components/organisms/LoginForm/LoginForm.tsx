@@ -40,16 +40,9 @@ const LoginForm = () => {
 
   const { login } = useAuth();
 
-  useEffect(() => {
-    return () => {
-      controller.abort();
-    };
-  }, []);
-
   const { mutate, isPending, isError, error } = useMutation({
     mutationFn: (values: LoginUserDTO) => {
       return axios.post(loginEndpoint, values, {
-        //signal: controller.signal,
         withCredentials: true,
       });
     },
