@@ -3,7 +3,6 @@ import { StyledLoginForm } from "./LoginForm.styles";
 import FormInput from "../../molecules/FormInput/FormInput";
 import { StyledDefaultButton } from "../../atoms/StyledDefaultButton/StyledDefaultButton.styles";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
 import axios from "../../../api/axios";
 import useAuth from "../../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -27,8 +26,6 @@ const LOGIN_FIELD_NAME = "login";
 const PASSWORD_FIELD_NAME = "password";
 
 const { lists } = routerPaths;
-
-const controller = new AbortController();
 
 const LoginForm = () => {
   const initialValues: LoginFormValues = {

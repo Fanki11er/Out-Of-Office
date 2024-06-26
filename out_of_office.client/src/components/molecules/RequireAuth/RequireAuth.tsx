@@ -7,8 +7,8 @@ const { root } = routerPaths;
 const RequireAuth = () => {
   const { user } = useAuth();
 
-  return user ? <Outlet /> : <Navigate to={root} />;
-  //return <Outlet />;
+  //return user ? <Outlet /> : <Navigate to={root} />;
+  return <Outlet />;
 };
 
 export default RequireAuth;
