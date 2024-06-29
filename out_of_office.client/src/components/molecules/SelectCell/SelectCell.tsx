@@ -1,17 +1,10 @@
 import { CellContext } from "@tanstack/react-table";
 import { StyledOption, StyledSelect } from "./SelectCell.styles";
 import { CombinedValue, EmployeeDTO } from "../../../types/outOffOffice";
+import { useQuery } from "@tanstack/react-query";
+import { axiosPrivate } from "../../../api/axios";
+import { getOptionsFromApi } from "../../../api/apiEndpoints";
 
-const mockedData: CombinedValue[] = [
-  {
-    id: 1,
-    value: "Option 1",
-  },
-  {
-    id: 2,
-    value: "Option 2",
-  },
-];
 const SelectCell = ({
   getValue,
   row,
@@ -19,9 +12,20 @@ const SelectCell = ({
   table,
 }: CellContext<EmployeeDTO, CombinedValue>) => {
   const { id, value } = getValue();
+  const optionsType = column.columnDef.meta?.optionsType || "";
+
+  const getOptions = async () => {
+    const response = await axiosPrivate.get(getOptionsFromApi(optionsType));
+    return response.data;
+  };
+  const { data } = useQuery<CombinedValue[]>({
+    queryKey: [optionsType],
+    queryFn: getOptions,
+  });
 
   const handleChange = (id: string) => {
-    const value = mockedData.find((combinedValue) => {
+    const combinedValues = data || [];
+    const value = combinedValues.find((combinedValue) => {
       return `${combinedValue.id}` === id;
     });
 
@@ -55,7 +59,13 @@ const SelectCell = ({
       defaultValue={value}
       onChange={(e) => handleChange(e.target.value)}
     >
-      {renderOptions(mockedData)}
+      {data ? (
+        renderOptions(data)
+      ) : (
+        <StyledOption hidden defaultChecked value={id}>
+          {value}
+        </StyledOption>
+      )}
     </StyledSelect>
   );
 };

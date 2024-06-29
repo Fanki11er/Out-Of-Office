@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Out_Of_Office.Server.Data;
 using Out_Of_Office.Server.Entities;
+using Out_Of_Office.Server.Enums;
 using Out_Of_Office.Server.Models;
 
 namespace Out_Of_Office.Server.Services
@@ -8,6 +10,9 @@ namespace Out_Of_Office.Server.Services
     public interface IListService
     {
         public List<EmployeeDTO> GetHRManagerEmployees();
+        public List<CombinedValueDTO> GetSubdivisionOptions();
+        public List<CombinedValueDTO> GetPositionOptions();
+        public List<CombinedValueDTO> GetStatusOptions();
     };
     public class ListsService(DataContext dataContext, IUserContextService userContextService): IListService
     {
@@ -47,6 +52,52 @@ namespace Out_Of_Office.Server.Services
             }
 
             return employeeesDTOs;
+        }
+
+        public List<CombinedValueDTO> GetSubdivisionOptions()
+        {
+            List<CombinedValueDTO> combinedValueDTOs = [];
+
+            var subdivisons = _dataContext.Subdivisions.ToList();
+            foreach (var subdivision in subdivisons)
+            {
+                combinedValueDTOs.Add(new CombinedValueDTO()
+                {
+                    Id = subdivision.Id,
+                    Value = subdivision.Name
+                });
+            }
+
+            return combinedValueDTOs;
+            
+        }
+
+        public List<CombinedValueDTO> GetPositionOptions()
+        {
+
+            List<CombinedValueDTO> combinedValueDTOs = Enum
+               .GetValues(typeof(EPositions))
+               .Cast<EPositions>()
+               .Select(t => new CombinedValueDTO
+               {
+                   Id = ((int)t),
+                   Value = t.ToString()
+               }).ToList();
+            return combinedValueDTOs;
+        }
+
+        public List<CombinedValueDTO> GetStatusOptions()
+        {
+
+            List<CombinedValueDTO> combinedValueDTOs = Enum
+               .GetValues(typeof(EStatus))
+               .Cast<EStatus>()
+               .Select(t => new CombinedValueDTO
+               {
+                   Id = ((int)t),
+                   Value = t.ToString()
+               }).ToList();
+            return combinedValueDTOs;
         }
     }
 }

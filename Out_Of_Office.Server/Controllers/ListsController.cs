@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Out_Of_Office.Server.Models;
 using Out_Of_Office.Server.Services;
 
 namespace Out_Of_Office.Server.Controllers
@@ -17,5 +18,31 @@ namespace Out_Of_Office.Server.Controllers
 
             return Ok(result);
         }
+
+
+        [HttpGet("subdivisions")]
+        public ActionResult<List<CombinedValueDTO>> GetSubdivisionOptions() 
+        {
+            var result = _listService.GetSubdivisionOptions();
+
+            return Ok(result);
+        }
+
+        [HttpGet("positions")]
+        public ActionResult<List<CombinedValueDTO>> GetPositionOptions()
+        {
+            var result = _listService.GetPositionOptions();
+
+            return Ok(result);
+        }
+
+        [HttpGet("statuses")]
+        public ActionResult<List<CombinedValueDTO>> GetStatusOptions()
+        {
+            var result = _listService.GetStatusOptions();
+
+            return Ok(result);
+        }
+
     }
 }

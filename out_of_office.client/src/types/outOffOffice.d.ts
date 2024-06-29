@@ -19,6 +19,7 @@ export type EmployeeDTO = {
 // };
 
 declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
     updateDataFromInput?: <T>(
       rowIndex: number,
@@ -26,8 +27,12 @@ declare module "@tanstack/react-table" {
       value: T
     ) => void;
     editedRows?: Set<number>;
-    // setEditedRows?: React.Dispatch<React.SetStateAction<EditedRows>>;
-    // editedRows?: EditedRows;
-    // revertData?: unknown;
+  }
+}
+
+declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData extends RowData, TValue> {
+    optionsType?: string;
   }
 }

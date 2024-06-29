@@ -66,18 +66,30 @@ const columns = [
   columnHelper.accessor("subdivision", {
     header: "Subdivision",
     cell: SelectCell,
+    meta: {
+      optionsType: "subdivisions",
+    },
   }),
   columnHelper.accessor("position", {
     header: "Position",
     cell: SelectCell,
+    meta: {
+      optionsType: "positions",
+    },
   }),
   columnHelper.accessor("status", {
     header: "Status",
     cell: SelectCell,
+    meta: {
+      optionsType: "statuses",
+    },
   }),
   columnHelper.accessor("peoplePartner", {
     header: "People Partner",
     cell: SelectCell,
+    meta: {
+      optionsType: "peoplePartners",
+    },
   }),
   columnHelper.accessor("outOfOfficeBalance", {
     header: "Out of office balance",
