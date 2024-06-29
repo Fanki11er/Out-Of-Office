@@ -10,6 +10,9 @@ import { StyledHRManagerEmployeesListRow } from "./HRManagerEmployeesList.styles
 import { StyledDefaultTableHeaderCell } from "../../atoms/StyledDefaultTableHeaderCell/StyledDefaultTableHeaderCell.styled";
 import { StyledDefaultTable } from "../../atoms/StyledDevaultyTable/StyledDefaultTable.styles";
 import { StyledDefaultTableCell } from "../../atoms/StyledDefaultTableCell/StyledDefaultTableCell.styles";
+import EditCell from "../EditCell/EditCell";
+import InputCell from "../InputCell/InputCell";
+import SelectCell from "../SelectCell/SelectCell";
 
 const mockData: EmployeeDTO[] = [
   {
@@ -58,37 +61,64 @@ const columnHelper = createColumnHelper<EmployeeDTO>();
 const columns = [
   columnHelper.accessor("fullName", {
     header: "Full Name",
-    cell: (info) => info.getValue(),
+    cell: InputCell,
   }),
-  columnHelper.accessor("subdivision.value", {
+  columnHelper.accessor("subdivision", {
     header: "Subdivision",
-    cell: (info) => info.getValue(),
+    cell: SelectCell,
   }),
-  columnHelper.accessor("position.value", {
+  columnHelper.accessor("position", {
     header: "Position",
-    cell: (info) => info.getValue(),
+    cell: SelectCell,
   }),
-  columnHelper.accessor("status.value", {
+  columnHelper.accessor("status", {
     header: "Status",
-    cell: (info) => info.getValue(),
+    cell: SelectCell,
   }),
-  columnHelper.accessor("peoplePartner.value", {
+  columnHelper.accessor("peoplePartner", {
     header: "People Partner",
-    cell: (info) => info.getValue(),
+    cell: SelectCell,
   }),
   columnHelper.accessor("outOfOfficeBalance", {
     header: "Out of office balance",
     cell: (info) => info.getValue(),
   }),
+  columnHelper.display({
+    header: "Edit",
+    cell: EditCell,
+  }),
 ];
 
 const HRManagerEmployeesList = () => {
   const [data, setData] = useState<EmployeeDTO[]>(mockData);
+  const [originalData, setOriginalData] = useState(mockData);
+  const [editedRows, setEditedRows] = useState<Set<number>>(() => new Set());
+
+  function updateDataFromInput<T>(
+    rowIndex: number,
+    columnId: string,
+    value: T
+  ) {
+    setData((prev) => {
+      return prev.map((row, index) => {
+        return index === rowIndex
+          ? { ...prev[rowIndex], [columnId]: value }
+          : row;
+      });
+    });
+    setEditedRows((prev) => prev.add(rowIndex));
+  }
+
   const table = useReactTable({
     columns: columns,
     data: data,
     getCoreRowModel: getCoreRowModel(),
+    meta: {
+      updateDataFromInput,
+      editedRows,
+    },
   });
+
   return (
     <StyledDefaultTable>
       <thead>

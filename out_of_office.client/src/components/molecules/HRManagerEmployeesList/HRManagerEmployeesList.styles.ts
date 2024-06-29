@@ -9,5 +9,5 @@ export const StyledHRManagerEmployeesListRow = styled(StyledDefaultTableRow)`
   border: 2px solid ${({ theme }) => theme.colors.darkGray};
   grid-template-columns:
     minmax(100px, 200px) minmax(100px, 150px) minmax(100px, 120px)
-    minmax(80px, 100px) minmax(100px, 200px) minmax(60px, 100px);
+    minmax(80px, 100px) minmax(100px, 200px) minmax(60px, 100px) 40px;
 `;
