@@ -5,6 +5,7 @@ namespace Out_Of_Office.Server.Models
 {
     public class EmployeeDTO
     {
+        public required int Id { get; set; }
         public required string FullName { get; set; }
         public required CombinedValueDTO Subdivision { get; set; }
         public required CombinedValueDTO Position { get; set; }

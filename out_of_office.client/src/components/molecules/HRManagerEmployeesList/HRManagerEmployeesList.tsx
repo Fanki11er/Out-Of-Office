@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  Row,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -13,7 +14,7 @@ import { StyledDefaultTableCell } from "../../atoms/StyledDefaultTableCell/Style
 import EditCell from "../EditCell/EditCell";
 import InputCell from "../InputCell/InputCell";
 import SelectCell from "../SelectCell/SelectCell";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { axiosPrivate } from "../../../api/axios";
 import { hrManagerEmployeesListEndpoint } from "../../../api/apiEndpoints";
 import { EMPLOYEES_HR_KEY } from "../../../api/QueryKeys";
@@ -26,6 +27,7 @@ const getEmployeesHR = async () => {
 const columnHelper = createColumnHelper<EmployeeDTO>();
 
 const columns = [
+  columnHelper.accessor("id", {}),
   columnHelper.accessor("fullName", {
     header: "Full Name",
     cell: InputCell,
@@ -71,7 +73,7 @@ const columns = [
 const HRManagerEmployeesList = () => {
   const [data, setData] = useState<EmployeeDTO[]>([]);
   const [originalData, setOriginalData] = useState<EmployeeDTO[]>([]);
-  const [editedRows, setEditedRows] = useState<Set<number>>(() => new Set());
+  const [editedRows, setEditedRows] = useState<number[]>([]);
 
   const { data: queryData } = useQuery<EmployeeDTO[]>({
     queryKey: [EMPLOYEES_HR_KEY],
@@ -82,6 +84,22 @@ const HRManagerEmployeesList = () => {
     queryData && setData(queryData);
     queryData && setOriginalData(queryData);
   }, [queryData]);
+
+  const { mutate } = useMutation({
+    mutationFn: (row: Row<EmployeeDTO>) => {
+      const values = row.original;
+      return axiosPrivate.put(hrManagerEmployeesListEndpoint, values);
+    },
+
+    onSuccess: (response, row) => {
+      setOriginalData((prev) => {
+        const newData = [...prev];
+        Object.assign([], newData, { [row.index]: response.data });
+        return newData;
+      });
+      removeRowFromEdited(row.index);
+    },
+  });
 
   function updateDataFromInput<T>(
     rowIndex: number,
@@ -95,19 +113,57 @@ const HRManagerEmployeesList = () => {
           : row;
       });
     });
-    setEditedRows((prev) => prev.add(rowIndex));
+
+    const editedRowIndex = editedRows.findIndex((editedRowId) => {
+      return editedRowId === rowIndex;
+    });
+
+    if (editedRowIndex < 0) {
+      setEditedRows((prev) => [...prev, rowIndex]);
+    }
   }
+
+  const cancelRowChanges = (rowIndex: number) => {
+    setData((prev) => {
+      return prev.map((row, index) => {
+        return index === rowIndex ? originalData[rowIndex] : row;
+      });
+    });
+
+    removeRowFromEdited(rowIndex);
+  };
+
+  const removeRowFromEdited = (rowIndex: number) => {
+    setEditedRows((prev) =>
+      prev.filter((editedRowIndex) => {
+        return editedRowIndex !== rowIndex;
+      })
+    );
+  };
+
+  const updateEmployeeOnServer = (row: Row<EmployeeDTO>) => {
+    mutate(row);
+  };
 
   const table = useReactTable({
     columns: columns,
     data: data,
     getCoreRowModel: getCoreRowModel(),
+    state: {
+      columnVisibility: {
+        id: false,
+      },
+    },
     meta: {
       updateDataFromInput,
+      cancelRowChanges,
+      updateEmployeeOnServer,
       editedRows,
     },
   });
   console.log(data);
+  console.log(editedRows);
+  console.log(originalData);
   return (
     <StyledDefaultTable>
       <thead>

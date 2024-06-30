@@ -5,12 +5,14 @@ using Out_Of_Office.Server.Entities;
 using Out_Of_Office.Server.Enums;
 using Out_Of_Office.Server.Exceptions;
 using Out_Of_Office.Server.Models;
+using Out_Of_Office.Server.Utilities;
 
 namespace Out_Of_Office.Server.Services
 {
     public interface IListService
     {
         public List<EmployeeDTO> GetHRManagerEmployees();
+        public EmployeeDTO UpdateHRManagerEmployeeList(EmployeeDTO employeeDTO);
         public List<CombinedValueDTO> GetSubdivisionOptions();
         public List<CombinedValueDTO> GetPeoplePartnerOptions();
         public List<CombinedValueDTO> GetPositionOptions();
@@ -39,37 +41,39 @@ namespace Out_Of_Office.Server.Services
             
             foreach (var employee in employees)
             {
-
-                EmployeeDTO dto = new()
-                {
-                    FullName = employee.FullName,
-                    Status = new CombinedValueDTO()
-                    { 
-                    Id = (int)employee.Status, 
-                    Value = Enum.GetName(typeof(EStatus), employee.Status) ?? ""
-                    },
-                    Subdivision = new CombinedValueDTO()
-                    {
-                        Id = employee.Subdivision?.Id ?? throw new SubdivisionNotFoundException(),
-                        Value = employee.Subdivision.Name
-                    },
-                    PeoplePartner = peoplePartner is not null? new CombinedValueDTO()
-                    {
-                        Id = peoplePartner.Id,
-                        Value = peoplePartner.FullName
-                    }: null,
-                    Position = new CombinedValueDTO()
-                    {
-                        Id = (int)employee.Position,
-                        Value = Enum.GetName(typeof(EPositions), employee.Position) ?? ""
-                    },
-                    OutOfOfficeBalance = employee.OutOfOfficeBalance,
-                };
+                var dto = Utilities.Utilities.CreateEmployeeDTO(employee, peoplePartner);
 
                 employeeesDTOs.Add(dto);
             }
 
             return employeeesDTOs;
+        }
+
+        public EmployeeDTO UpdateHRManagerEmployeeList(EmployeeDTO employeeDTO)
+        {
+
+            var employeeForUpdate =  _dataContext.Employees
+                .FirstOrDefault(e => e.Id == employeeDTO.Id) ?? 
+                throw new BadHttpRequestException("Employee for update entry not found");
+
+            if (employeeForUpdate.Position != EPositions.HRManager &&
+                employeeForUpdate.Position != EPositions.HRDirector &&
+                employeeDTO.PeoplePartner is null)
+            {
+                throw new BadHttpRequestException("Only HR Director position not need People Partner entry");
+            }
+
+            employeeForUpdate.FullName = employeeDTO.FullName;
+            employeeForUpdate.PeoplePartnerId = employeeDTO.PeoplePartner?.Id;
+            employeeForUpdate.Status = (EStatus)employeeDTO.Status.Id;
+            employeeForUpdate.Position = (EPositions)employeeDTO.Position.Id;
+            employeeForUpdate.SubdivisionId = employeeDTO.Subdivision.Id;
+
+            _dataContext.Employees.Update(employeeForUpdate);
+
+            DatabaseUtilities.SaveChangesToDatabase(_dataContext);
+
+            return employeeDTO;
         }
 
         public List<CombinedValueDTO> GetSubdivisionOptions()

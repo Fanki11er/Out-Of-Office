@@ -19,6 +19,14 @@ namespace Out_Of_Office.Server.Controllers
             return Ok(result);
         }
 
+        [HttpPut("employeesHR")]
+        public ActionResult<EmployeeDTO> UpdateHRManagerEmployeeList([FromBody] EmployeeDTO employeeDTO)
+        {
+            var result = _listService.UpdateHRManagerEmployeeList(employeeDTO);
+
+            return Ok(result);
+        }
+
 
         [HttpGet("subdivisions")]
         public ActionResult<List<CombinedValueDTO>> GetSubdivisionOptions() 

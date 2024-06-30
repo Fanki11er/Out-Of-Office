@@ -6,6 +6,7 @@ export type CombinedValue = {
 };
 
 export type EmployeeDTO = {
+  id: number;
   fullName: string;
   subdivision: CombinedValue;
   position: CombinedValue;
@@ -26,7 +27,9 @@ declare module "@tanstack/react-table" {
       columnId: string,
       value: T
     ) => void;
-    editedRows?: Set<number>;
+    cancelRowChanges?: (rowIndex: number) => void;
+    updateEmployeeOnServer?: <T>(row: Row<T>) => void;
+    editedRows?: number[];
   }
 }
 
