@@ -30,7 +30,9 @@ const columns = [
   columnHelper.accessor("id", {}),
   columnHelper.accessor("fullName", {
     header: "Full Name",
-    cell: InputCell,
+    cell: (info) => (
+      <InputCell cell={info} pattern={"^[a-zA-z]{2,}[ ][a-zA-z- ]{2,}$"} />
+    ),
   }),
   columnHelper.accessor("subdivision", {
     header: "Subdivision",
@@ -114,13 +116,7 @@ const HRManagerEmployeesList = () => {
       });
     });
 
-    const editedRowIndex = editedRows.findIndex((editedRowId) => {
-      return editedRowId === rowIndex;
-    });
-
-    if (editedRowIndex < 0) {
-      setEditedRows((prev) => [...prev, rowIndex]);
-    }
+    addRowToEditedRows(rowIndex);
   }
 
   const cancelRowChanges = (rowIndex: number) => {
@@ -141,6 +137,16 @@ const HRManagerEmployeesList = () => {
     );
   };
 
+  const addRowToEditedRows = (rowIndex: number) => {
+    const editedRowIndex = editedRows.findIndex((editedRowId) => {
+      return editedRowId === rowIndex;
+    });
+
+    if (editedRowIndex < 0) {
+      setEditedRows((prev) => [...prev, rowIndex]);
+    }
+  };
+
   const updateEmployeeOnServer = (row: Row<EmployeeDTO>) => {
     mutate(row);
   };
@@ -158,6 +164,7 @@ const HRManagerEmployeesList = () => {
       updateDataFromInput,
       cancelRowChanges,
       updateEmployeeOnServer,
+      addRowToEditedRows,
       editedRows,
     },
   });

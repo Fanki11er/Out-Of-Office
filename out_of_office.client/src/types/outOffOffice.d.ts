@@ -27,6 +27,7 @@ declare module "@tanstack/react-table" {
       columnId: string,
       value: T
     ) => void;
+    addRowToEditedRows?: (rowIndex: number) => void;
     cancelRowChanges?: (rowIndex: number) => void;
     updateEmployeeOnServer?: <T>(row: Row<T>) => void;
     editedRows?: number[];

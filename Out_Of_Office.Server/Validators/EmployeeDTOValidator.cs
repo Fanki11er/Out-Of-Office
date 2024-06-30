@@ -19,7 +19,7 @@ namespace Out_Of_Office.Server.Validators
             RuleFor(r => r.FullName).Custom((value, context) =>
             {
                 string pattern = @"^[a-zA-z]{2,}[ ][a-zA-z- ]{2,}$";
-                if (value != "" && value != null && !Regex.IsMatch(value, pattern))
+                if (value != null && !Regex.IsMatch(value, pattern))
                 {
                     context.AddFailure("Full Name", "Incorrect value");
                 }

@@ -3,21 +3,44 @@ import { StyledInput } from "./InputCell.styles";
 import { CellContext } from "@tanstack/react-table";
 import { EmployeeDTO } from "../../../types/outOffOffice";
 
-const InputCell = ({
-  getValue,
-  row,
-  column,
-  table,
-}: CellContext<EmployeeDTO, string>) => {
+type Props = {
+  cell: CellContext<EmployeeDTO, string>;
+  pattern?: string;
+};
+const InputCell = (props: Props) => {
+  const {
+    cell: { table, row, column, getValue },
+    pattern,
+  } = props;
+
   const initialValue = getValue();
+  const meta = table.options.meta;
+
   const [value, setValue] = useState(initialValue);
+  const [error, setError] = useState("");
+
+  const validate = (value: string, pattern?: string) => {
+    if (pattern) {
+      const expression = new RegExp(pattern);
+      const result = expression.test(value);
+      if (!result) {
+        !error &&
+          setError(
+            "Full name must have first name and surname divided by space. Min length of names is 2 characters"
+          );
+      } else {
+        error && setError("");
+      }
+    }
+  };
 
   useEffect(() => {
     setValue(initialValue);
+    validate(initialValue, pattern);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialValue]);
 
   const handleBlur = () => {
-    const meta = table.options.meta;
     if (value !== initialValue) {
       meta &&
         meta.updateDataFromInput &&
@@ -27,31 +50,20 @@ const InputCell = ({
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
+    validate(e.target.value, pattern);
+    meta?.addRowToEditedRows && meta.addRowToEditedRows(row.index);
   };
 
   return (
     <StyledInput
       onChange={(e) => handleChange(e)}
       onBlur={handleBlur}
+      onFocus={(e) => validate(e.target.value, pattern)}
       value={value}
+      title={error ? error : ""}
+      $error={!!error}
     />
   );
 };
 
 export default InputCell;
-
-/*
-revertData: (rowIndex: number, revert: boolean) => {
-        if (revert) {
-          setData((old) =>
-            old.map((row, index) =>
-              index === rowIndex ? originalData[rowIndex] : row
-            )
-          );
-        } else {
-          setOriginalData((old) =>
-            old.map((row, index) => (index === rowIndex ? data[rowIndex] : row))
-          );
-        }
-      },
-*/

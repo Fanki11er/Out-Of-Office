@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Out_Of_Office.Server;
 using Out_Of_Office.Server.Data;
 using Out_Of_Office.Server.MiddleWares;
+using Out_Of_Office.Server.Models;
 using Out_Of_Office.Server.Services;
 using Out_Of_Office.Server.Utilities;
 using Out_Of_Office.Server.Validators;
@@ -62,13 +63,15 @@ builder.Services.AddCors(p => p.AddPolicy("CORS", builder =>
 
 // Add Validators
 
-builder.Services.AddScoped<IValidator, RegisterEmployeeDTOValidator>();
-builder.Services.AddScoped<IValidator, LoginEmployeeDTOValidator>();
-builder.Services.AddScoped<IValidator, EmployeeDTOValidator>();
+builder.Services.AddScoped<IValidator<RegisterEmployeeDTO>, RegisterEmployeeDTOValidator>();
+builder.Services.AddScoped<IValidator<LoginEmployeeDTO>, LoginEmployeeDTOValidator>();
+builder.Services.AddScoped<IValidator<EmployeeDTO>, EmployeeDTOValidator>();
+
 
 // Add MiddleWare
-
 builder.Services.AddScoped<ErrorHandlingMiddleWare>();
+
+
 
 var app = builder.Build();
 
