@@ -10,14 +10,16 @@ const SelectCell = ({
   row,
   column,
   table,
-}: CellContext<EmployeeDTO, CombinedValue>) => {
-  const { id, value } = getValue();
+}: CellContext<EmployeeDTO, CombinedValue | undefined>) => {
+  const cellValue = getValue();
+
   const optionsType = column.columnDef.meta?.optionsType || "";
 
   const getOptions = async () => {
     const response = await axiosPrivate.get(getOptionsFromApi(optionsType));
     return response.data;
   };
+
   const { data } = useQuery<CombinedValue[]>({
     queryKey: [optionsType],
     queryFn: getOptions,
@@ -37,36 +39,39 @@ const SelectCell = ({
       meta.updateDataFromInput(row.index, column.id, value);
   };
 
+  const filterCurrentCellValue = (
+    options: CombinedValue[],
+    currentCellValue: CombinedValue | undefined
+  ) => {
+    if (!currentCellValue) {
+      return options;
+    }
+    return options.filter((option) => {
+      return option.id !== currentCellValue.id;
+    });
+  };
+
   const renderOptions = (options: CombinedValue[]) => {
-    return options.map((option) => {
-      const selected = id === option.id;
-      const optionValue = selected ? value : option.value;
+    return filterCurrentCellValue(options, cellValue).map((option) => {
       return (
-        <StyledOption
-          key={option.id}
-          hidden={selected}
-          defaultChecked={selected}
-          value={option.id}
-        >
-          {optionValue}
+        <StyledOption key={option.id} value={option.id}>
+          {option.value}
         </StyledOption>
       );
     });
   };
 
-  return (
-    <StyledSelect
-      defaultValue={value}
-      onChange={(e) => handleChange(e.target.value)}
-    >
-      {data ? (
-        renderOptions(data)
-      ) : (
-        <StyledOption hidden defaultChecked value={id}>
-          {value}
+  return data && data.length > 1 ? (
+    <StyledSelect onChange={(e) => handleChange(e.target.value)}>
+      {cellValue && (
+        <StyledOption hidden defaultChecked value={cellValue.id}>
+          {cellValue.value}
         </StyledOption>
       )}
+      {renderOptions(data)}
     </StyledSelect>
+  ) : (
+    <span>{cellValue?.value || ""}</span>
   );
 };
 

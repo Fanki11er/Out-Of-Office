@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -13,49 +13,16 @@ import { StyledDefaultTableCell } from "../../atoms/StyledDefaultTableCell/Style
 import EditCell from "../EditCell/EditCell";
 import InputCell from "../InputCell/InputCell";
 import SelectCell from "../SelectCell/SelectCell";
+import { useQuery } from "@tanstack/react-query";
+import { axiosPrivate } from "../../../api/axios";
+import { hrManagerEmployeesListEndpoint } from "../../../api/apiEndpoints";
+import { EMPLOYEES_HR_KEY } from "../../../api/QueryKeys";
 
-const mockData: EmployeeDTO[] = [
-  {
-    fullName: "Marta Grabowska",
-    subdivision: {
-      id: 1,
-      value: "Back-end",
-    },
-    position: {
-      id: 2,
-      value: "Hr Manager",
-    },
-    status: {
-      id: 1,
-      value: "Active",
-    },
-    outOfOfficeBalance: 26,
-    peoplePartner: {
-      id: 1,
-      value: "Krzysztof Dziedzic",
-    },
-  },
-  {
-    fullName: "Patryk Gruszka",
-    subdivision: {
-      id: 2,
-      value: "Frontend-end",
-    },
-    position: {
-      id: 2,
-      value: "Employee",
-    },
-    status: {
-      id: 1,
-      value: "Active",
-    },
-    outOfOfficeBalance: 26,
-    peoplePartner: {
-      id: 2,
-      value: "Marta Grabowska",
-    },
-  },
-];
+const getEmployeesHR = async () => {
+  const response = await axiosPrivate.get(hrManagerEmployeesListEndpoint);
+  return response.data;
+};
+
 const columnHelper = createColumnHelper<EmployeeDTO>();
 
 const columns = [
@@ -102,9 +69,19 @@ const columns = [
 ];
 
 const HRManagerEmployeesList = () => {
-  const [data, setData] = useState<EmployeeDTO[]>(mockData);
-  const [originalData, setOriginalData] = useState(mockData);
+  const [data, setData] = useState<EmployeeDTO[]>([]);
+  const [originalData, setOriginalData] = useState<EmployeeDTO[]>([]);
   const [editedRows, setEditedRows] = useState<Set<number>>(() => new Set());
+
+  const { data: queryData } = useQuery<EmployeeDTO[]>({
+    queryKey: [EMPLOYEES_HR_KEY],
+    queryFn: getEmployeesHR,
+  });
+
+  useEffect(() => {
+    queryData && setData(queryData);
+    queryData && setOriginalData(queryData);
+  }, [queryData]);
 
   function updateDataFromInput<T>(
     rowIndex: number,
@@ -130,7 +107,7 @@ const HRManagerEmployeesList = () => {
       editedRows,
     },
   });
-
+  console.log(data);
   return (
     <StyledDefaultTable>
       <thead>

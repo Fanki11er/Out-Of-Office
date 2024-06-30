@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Out_Of_Office.Server.Data;
 using Out_Of_Office.Server.Entities;
 using Out_Of_Office.Server.Enums;
+using Out_Of_Office.Server.Exceptions;
 using Out_Of_Office.Server.Models;
 
 namespace Out_Of_Office.Server.Services
@@ -11,6 +12,7 @@ namespace Out_Of_Office.Server.Services
     {
         public List<EmployeeDTO> GetHRManagerEmployees();
         public List<CombinedValueDTO> GetSubdivisionOptions();
+        public List<CombinedValueDTO> GetPeoplePartnerOptions();
         public List<CombinedValueDTO> GetPositionOptions();
         public List<CombinedValueDTO> GetStatusOptions();
     };
@@ -25,7 +27,7 @@ namespace Out_Of_Office.Server.Services
             List<EmployeeDTO> employeeesDTOs = [];
 
             //var authenticatedUserId = _userContextService.GetUserId();
-            var authenticatedUserId = 2;
+            var authenticatedUserId = 4;
 
             var employees = _dataContext.Employees
                 .Where(emp => emp.PeoplePartnerId == authenticatedUserId)
@@ -41,10 +43,26 @@ namespace Out_Of_Office.Server.Services
                 EmployeeDTO dto = new()
                 {
                     FullName = employee.FullName,
-                    Status = employee.Status,
-                    Subdivision = employee.Subdivision?.Name?? "",
-                    PeoplePartner = peoplePartner?.FullName?? "",
-                    Position = employee.Position,
+                    Status = new CombinedValueDTO()
+                    { 
+                    Id = (int)employee.Status, 
+                    Value = Enum.GetName(typeof(EStatus), employee.Status) ?? ""
+                    },
+                    Subdivision = new CombinedValueDTO()
+                    {
+                        Id = employee.Subdivision?.Id ?? throw new SubdivisionNotFoundException(),
+                        Value = employee.Subdivision.Name
+                    },
+                    PeoplePartner = peoplePartner is not null? new CombinedValueDTO()
+                    {
+                        Id = peoplePartner.Id,
+                        Value = peoplePartner.FullName
+                    }: null,
+                    Position = new CombinedValueDTO()
+                    {
+                        Id = (int)employee.Position,
+                        Value = Enum.GetName(typeof(EPositions), employee.Position) ?? ""
+                    },
                     OutOfOfficeBalance = employee.OutOfOfficeBalance,
                 };
 
@@ -72,6 +90,27 @@ namespace Out_Of_Office.Server.Services
             
         }
 
+        public List<CombinedValueDTO> GetPeoplePartnerOptions()
+        {
+            List<CombinedValueDTO> combinedValueDTOs = [];
+
+            var peoplePartners = _dataContext.Employees
+                .Where(e => e.Position == EPositions.HRManager)
+                .ToList();
+
+            foreach (var peoplePartner in peoplePartners)
+            {
+                combinedValueDTOs.Add(new CombinedValueDTO()
+                {
+                    Id = peoplePartner.Id,
+                    Value = peoplePartner.FullName
+                });
+            }
+
+            return combinedValueDTOs;
+
+        }
+
         public List<CombinedValueDTO> GetPositionOptions()
         {
 
@@ -88,7 +127,6 @@ namespace Out_Of_Office.Server.Services
 
         public List<CombinedValueDTO> GetStatusOptions()
         {
-
             List<CombinedValueDTO> combinedValueDTOs = Enum
                .GetValues(typeof(EStatus))
                .Cast<EStatus>()

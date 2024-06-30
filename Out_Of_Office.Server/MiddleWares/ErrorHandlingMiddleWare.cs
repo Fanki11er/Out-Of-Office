@@ -26,6 +26,12 @@ namespace Out_Of_Office.Server.MiddleWares
                 context.Response.StatusCode =  exception.StatusCode;
                 await context.Response.WriteAsync(exception.Message);
             }
+            catch (SubdivisionNotFoundException exception)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(exception.Message);
+                _logger.LogError( exception.Message, exception);
+            }
             catch (Exception exception)
             {
                 context.Response.StatusCode = 500;

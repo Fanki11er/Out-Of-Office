@@ -28,6 +28,14 @@ namespace Out_Of_Office.Server.Controllers
             return Ok(result);
         }
 
+        [HttpGet("peoplePartners")]
+        public ActionResult<List<CombinedValueDTO>> GetPeoplePartnerOptions()
+        {
+            var result = _listService.GetPeoplePartnerOptions();
+
+            return Ok(result);
+        }
+
         [HttpGet("positions")]
         public ActionResult<List<CombinedValueDTO>> GetPositionOptions()
         {

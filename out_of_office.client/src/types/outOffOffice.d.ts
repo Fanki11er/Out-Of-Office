@@ -11,7 +11,7 @@ export type EmployeeDTO = {
   position: CombinedValue;
   status: CombinedValue;
   outOfOfficeBalance: number;
-  peoplePartner: CombinedValue;
+  peoplePartner?: CombinedValue;
 };
 
 // export type EditedRows = {
