@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import {
+  Header,
   Row,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -18,6 +20,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { axiosPrivate } from "../../../api/axios";
 import { hrManagerEmployeesListEndpoint } from "../../../api/apiEndpoints";
 import { EMPLOYEES_HR_KEY } from "../../../api/QueryKeys";
+import { StyledIcon } from "../../atoms/StyledIcon.styles";
+import sortIcon from "../../../assets/sortIcon.svg";
+import ascSortingDirectionIcon from "../../../assets/ascSortingDirectionIcon.svg";
+import descSortingDirectionIcon from "../../../assets/descSortingDirectionIcon.svg";
 
 const getEmployeesHR = async () => {
   const response = await axiosPrivate.get(hrManagerEmployeesListEndpoint);
@@ -151,10 +157,25 @@ const HRManagerEmployeesList = () => {
     mutate(row);
   };
 
+  const renderSortingDirection = (header: Header<EmployeeDTO, unknown>) => {
+    switch (header.column.getIsSorted()) {
+      case "asc": {
+        return <StyledIcon src={ascSortingDirectionIcon} />;
+      }
+      case "desc": {
+        return <StyledIcon src={descSortingDirectionIcon} />;
+      }
+      default: {
+        return null;
+      }
+    }
+  };
+
   const table = useReactTable({
     columns: columns,
     data: data,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     state: {
       columnVisibility: {
         id: false,
@@ -168,6 +189,7 @@ const HRManagerEmployeesList = () => {
       editedRows,
     },
   });
+
   console.log(data);
   console.log(editedRows);
   console.log(originalData);
@@ -184,6 +206,13 @@ const HRManagerEmployeesList = () => {
                       header.column.columnDef.header,
                       header.getContext()
                     )}
+                {header.column.getCanSort() && (
+                  <StyledIcon
+                    src={sortIcon}
+                    onClick={header.column.getToggleSortingHandler()}
+                  />
+                )}
+                {renderSortingDirection(header)}
               </StyledDefaultTableHeaderCell>
             ))}
           </StyledHRManagerEmployeesListRow>
