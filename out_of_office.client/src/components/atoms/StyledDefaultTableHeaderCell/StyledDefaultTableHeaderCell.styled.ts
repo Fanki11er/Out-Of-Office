@@ -1,8 +1,12 @@
 import styled from "styled-components";
 
-export const StyledDefaultTableHeaderCell = styled.th`
-  display: flex;
+type Props = {
+  width: number;
+};
 
+export const StyledDefaultTableHeaderCell = styled.th<Props>`
+  display: flex;
+  width: ${({ width }) => `${width}px`};
   flex-direction: column;
   padding: 10px;
   row-gap: 8px;

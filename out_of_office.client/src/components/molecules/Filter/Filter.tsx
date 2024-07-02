@@ -1,13 +1,13 @@
 import { Column } from "@tanstack/react-table";
-import { CombinedValue, EmployeeDTO } from "../../../types/outOffOffice";
+import { CombinedValue } from "../../../types/outOffOffice";
 import DebouncedInput from "../DebounceImput/DebounceImput";
 import { useMemo } from "react";
 
-type Props = {
-  column: Column<EmployeeDTO, unknown>;
+type Props<T> = {
+  column: Column<T, unknown>;
 };
 
-const Filter = ({ column }: Props) => {
+function Filter<T>({ column }: Props<T>) {
   const columnFilterValue = column.getFilterValue();
   const { filterVariant } = column.columnDef.meta ?? {};
 
@@ -79,6 +79,6 @@ const Filter = ({ column }: Props) => {
       )}
     </>
   );
-};
+}
 
 export default Filter;

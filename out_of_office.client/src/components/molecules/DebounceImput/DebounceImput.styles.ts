@@ -4,5 +4,5 @@ type Props = {
   type: string;
 };
 export const StyledDebounceInput = styled(StyledDefaultInput)<Props>`
-  width: ${(props) => (props.type === "number" ? "60px" : "100%")};
+  width: ${(props) => (props.type === "number" ? "60px" : "inherit")};
 `;
