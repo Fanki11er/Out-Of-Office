@@ -1,16 +1,23 @@
 import { useEffect, useState } from "react";
 import {
+  ColumnFiltersState,
   Header,
   Row,
   flexRender,
   getCoreRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
+  getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { EmployeeDTO } from "../../../types/outOffOffice";
 import { StyledHRManagerEmployeesListRow } from "./HRManagerEmployeesList.styles";
-import { StyledDefaultTableHeaderCell } from "../../atoms/StyledDefaultTableHeaderCell/StyledDefaultTableHeaderCell.styled";
+import {
+  StyledDefaultTableHeaderCell,
+  StyledFlexWrapper,
+} from "../../atoms/StyledDefaultTableHeaderCell/StyledDefaultTableHeaderCell.styled";
 import { StyledDefaultTable } from "../../atoms/StyledDevaultyTable/StyledDefaultTable.styles";
 import { StyledDefaultTableCell } from "../../atoms/StyledDefaultTableCell/StyledDefaultTableCell.styles";
 import EditCell from "../EditCell/EditCell";
@@ -24,6 +31,8 @@ import { StyledIcon } from "../../atoms/StyledIcon.styles";
 import sortIcon from "../../../assets/sortIcon.svg";
 import ascSortingDirectionIcon from "../../../assets/ascSortingDirectionIcon.svg";
 import descSortingDirectionIcon from "../../../assets/descSortingDirectionIcon.svg";
+import Filter from "../Filter/Filter";
+import { filterCombinedValue } from "../../../Utilities/utilities";
 
 const getEmployeesHR = async () => {
   const response = await axiosPrivate.get(hrManagerEmployeesListEndpoint);
@@ -39,38 +48,52 @@ const columns = [
     cell: (info) => (
       <InputCell cell={info} pattern={"^[a-zA-z]{2,}[ ][a-zA-z- ]{2,}$"} />
     ),
+    meta: {
+      filterVariant: "text",
+    },
   }),
   columnHelper.accessor("subdivision", {
     header: "Subdivision",
     cell: SelectCell,
     meta: {
       optionsType: "subdivisions",
+      filterVariant: "select",
     },
+    filterFn: filterCombinedValue,
   }),
   columnHelper.accessor("position", {
     header: "Position",
     cell: SelectCell,
     meta: {
       optionsType: "positions",
+      filterVariant: "select",
     },
+    filterFn: filterCombinedValue,
   }),
   columnHelper.accessor("status", {
     header: "Status",
     cell: SelectCell,
     meta: {
       optionsType: "statuses",
+      filterVariant: "select",
     },
+    filterFn: filterCombinedValue,
   }),
   columnHelper.accessor("peoplePartner", {
     header: "People Partner",
     cell: SelectCell,
     meta: {
       optionsType: "peoplePartners",
+      filterVariant: "select",
     },
+    filterFn: filterCombinedValue,
   }),
   columnHelper.accessor("outOfOfficeBalance", {
     header: "Out of office balance",
     cell: (info) => info.getValue(),
+    meta: {
+      filterVariant: "range",
+    },
   }),
   columnHelper.display({
     header: "Edit",
@@ -82,6 +105,7 @@ const HRManagerEmployeesList = () => {
   const [data, setData] = useState<EmployeeDTO[]>([]);
   const [originalData, setOriginalData] = useState<EmployeeDTO[]>([]);
   const [editedRows, setEditedRows] = useState<number[]>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const { data: queryData } = useQuery<EmployeeDTO[]>({
     queryKey: [EMPLOYEES_HR_KEY],
@@ -176,10 +200,15 @@ const HRManagerEmployeesList = () => {
     data: data,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
     state: {
       columnVisibility: {
         id: false,
       },
+      columnFilters,
     },
     meta: {
       updateDataFromInput,
@@ -190,9 +219,9 @@ const HRManagerEmployeesList = () => {
     },
   });
 
-  console.log(data);
-  console.log(editedRows);
-  console.log(originalData);
+  // console.log(data);
+  // console.log(editedRows);
+  // console.log(originalData);
   return (
     <StyledDefaultTable>
       <thead>
@@ -200,19 +229,26 @@ const HRManagerEmployeesList = () => {
           <StyledHRManagerEmployeesListRow key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
               <StyledDefaultTableHeaderCell key={header.id}>
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                {header.column.getCanSort() && (
-                  <StyledIcon
-                    src={sortIcon}
-                    onClick={header.column.getToggleSortingHandler()}
-                  />
-                )}
-                {renderSortingDirection(header)}
+                <StyledFlexWrapper>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                  {header.column.getCanSort() && (
+                    <StyledIcon
+                      src={sortIcon}
+                      onClick={header.column.getToggleSortingHandler()}
+                    />
+                  )}
+                  {renderSortingDirection(header)}
+                </StyledFlexWrapper>
+                {header.column.getCanFilter() && data.length ? (
+                  <StyledFlexWrapper>
+                    <Filter column={header.column} />
+                  </StyledFlexWrapper>
+                ) : null}
               </StyledDefaultTableHeaderCell>
             ))}
           </StyledHRManagerEmployeesListRow>

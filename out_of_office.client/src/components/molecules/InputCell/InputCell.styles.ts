@@ -1,18 +1,13 @@
 import styled from "styled-components";
+import { StyledDefaultInput } from "../../atoms/StyledDefaultInput/StyledDefaultInput.styles";
 
 type Props = {
   $error: boolean;
 };
 
-export const StyledInput = styled.input<Props>`
-  display: flex;
-  width: 100%;
-  padding: 0.5rem;
+export const StyledInput = styled(StyledDefaultInput)<Props>`
   border: 1px solid
     ${(props) => (props.$error ? props.theme.colors.red : "transparent")};
-  border-radius: 10px;
-  outline: none;
-  transition: all 0.5s;
   &:hover,
   &:focus {
     border: 1px solid

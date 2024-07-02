@@ -8,6 +8,6 @@ export const StyledHRManagerEmployeesListRow = styled(StyledDefaultTableRow)`
   border-radius: 5px;
   border: 2px solid ${({ theme }) => theme.colors.darkGray};
   grid-template-columns:
-    minmax(100px, 200px) minmax(100px, 150px) minmax(100px, 120px)
-    minmax(80px, 100px) minmax(100px, 200px) minmax(60px, 100px) 40px;
+    minmax(120px, 200px) minmax(120px, 150px) minmax(100px, 120px)
+    minmax(120px, 100px) minmax(120px, 200px) minmax(150px, 140px) 60px;
 `;
