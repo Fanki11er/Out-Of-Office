@@ -15,9 +15,12 @@ export type EmployeeDTO = {
   peoplePartner?: CombinedValue;
 };
 
-// export type EditedRows = {
-//   [key: string]: boolean;
-// };
+export type ErrorData = {
+  errors: {
+    [key: string]: string[];
+  };
+  status: number;
+};
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -1,5 +1,10 @@
 import { CellContext, Row } from "@tanstack/react-table";
 import { EmployeeDTO } from "../../../types/outOffOffice";
+import {
+  StyledCellCancelButton,
+  StyledCellEditButton,
+  StyledEditCell,
+} from "./EditCell.styles";
 
 const EditCell = ({ row, table }: CellContext<EmployeeDTO, unknown>) => {
   const editedRows = table.options.meta?.editedRows;
@@ -19,10 +24,14 @@ const EditCell = ({ row, table }: CellContext<EmployeeDTO, unknown>) => {
     editedRows.findIndex((editedRowIndex) => {
       return editedRowIndex === row.index;
     }) >= 0 ? (
-    <>
-      <button onClick={() => handleUpdateEmployeeOnServer(row)}>✔</button>
-      <button onClick={() => handleCancelRowChanges(row.index)}>X</button>
-    </>
+    <StyledEditCell>
+      <StyledCellEditButton onClick={() => handleUpdateEmployeeOnServer(row)}>
+        ✔
+      </StyledCellEditButton>
+      <StyledCellCancelButton onClick={() => handleCancelRowChanges(row.index)}>
+        X
+      </StyledCellCancelButton>
+    </StyledEditCell>
   ) : null;
 };
 

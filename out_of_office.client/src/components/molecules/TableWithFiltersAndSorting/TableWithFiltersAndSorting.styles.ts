@@ -4,11 +4,12 @@ import { StyledDefaultTableRow } from "../../atoms/StyledDefaultTableRow/StyledD
 export const StyledTableWrapper = styled.div`
   display: flex;
   width: 100%;
-  align-items: center;
-  justify-items: center;
   max-width: 1920px;
   overflow: auto;
-  max-height: 100vh;
+  //max-height: 60vh;
+  //flex: 1;
+  //padding: 100px 0;
+  //background-color: red;
 `;
 
 export const StyledTableRow = styled(StyledDefaultTableRow)`

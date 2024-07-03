@@ -2,6 +2,7 @@ import { Column } from "@tanstack/react-table";
 import { CombinedValue } from "../../../types/outOffOffice";
 import DebouncedInput from "../DebounceImput/DebounceImput";
 import { useMemo } from "react";
+import { StyledDefaultSelect } from "../../atoms/StyledDefaultSelect/StyledDefaultSelect.styles";
 
 type Props<T> = {
   column: Column<T, unknown>;
@@ -58,7 +59,7 @@ function Filter<T>({ column }: Props<T>) {
         </>
       )}
       {filterVariant === "select" && (
-        <select
+        <StyledDefaultSelect
           onChange={(e) => column.setFilterValue(e.target.value)}
           value={columnFilterValue?.toString()}
         >
@@ -68,7 +69,7 @@ function Filter<T>({ column }: Props<T>) {
               {value.value}
             </option>
           ))}
-        </select>
+        </StyledDefaultSelect>
       )}
       {filterVariant === "text" && (
         <DebouncedInput

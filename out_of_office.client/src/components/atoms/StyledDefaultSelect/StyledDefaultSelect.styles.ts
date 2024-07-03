@@ -1,16 +1,16 @@
 import styled from "styled-components";
 
-export const StyledDefaultInput = styled.input`
-  display: flex;
+export const StyledDefaultSelect = styled.select`
   width: 100%;
+  border-radius: 10px;
   padding: 0.5rem;
   border: 1px solid ${({ theme }) => theme.colors.darkGray};
-  border-radius: 10px;
   outline: none;
-  transition: all 0.5s;
+
   &:hover,
   &:focus {
     border: 1px solid ${(props) => props.theme.colors.orange};
     background-color: ${(props) => props.theme.colors.lightOrange};
+    cursor: pointer;
   }
 `;

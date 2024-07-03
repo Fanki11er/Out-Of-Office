@@ -5,7 +5,7 @@ import {
   StyledDefaultTableHeaderCell,
   StyledFlexWrapper,
 } from "../../atoms/StyledDefaultTableHeaderCell/StyledDefaultTableHeaderCell.styled";
-import { StyledDefaultTable } from "../../atoms/StyledDevaultyTable/StyledDefaultTable.styles";
+import { StyledDefaultTable } from "../../atoms/StyledDefaultTable/StyledDefaultTable.styles";
 import { StyledDefaultTableCell } from "../../atoms/StyledDefaultTableCell/StyledDefaultTableCell.styles";
 import { StyledIcon } from "../../atoms/StyledIcon.styles";
 import Filter from "../Filter/Filter";

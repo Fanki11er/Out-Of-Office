@@ -19,8 +19,19 @@ import { axiosPrivate } from "../../../api/axios";
 import { hrManagerEmployeesListEndpoint } from "../../../api/apiEndpoints";
 import { EMPLOYEES_HR_KEY } from "../../../api/QueryKeys";
 
-import { filterCombinedValue } from "../../../Utilities/utilities";
+import {
+  filterCombinedValue,
+  getErrorMessages,
+} from "../../../Utilities/utilities";
 import TableWithFiltersAndSorting from "../TableWithFiltersAndSorting/TableWithFiltersAndSorting";
+import TableLoader from "../TableLoader/TableLoader";
+import TableError from "../TableError/TableError";
+import {
+  StyledHRManagerEmployeesListWrapper,
+  StyledTableMutationStatusError,
+  StyledTableMutationStatusPending,
+  StyledTableMutationStatusSuccess,
+} from "./HRManagerEmployeesList.styles";
 
 const getEmployeesHR = async () => {
   const response = await axiosPrivate.get(hrManagerEmployeesListEndpoint);
@@ -83,7 +94,7 @@ const columns = [
   }),
   columnHelper.accessor("outOfOfficeBalance", {
     header: "Out of office balance",
-    size: 180,
+    size: 220,
     cell: (info) => info.getValue(),
     meta: {
       filterVariant: "range",
@@ -92,7 +103,7 @@ const columns = [
   columnHelper.display({
     header: "Edit",
     cell: EditCell,
-    size: 60,
+    size: 100,
   }),
 ];
 
@@ -102,7 +113,12 @@ const HRManagerEmployeesList = () => {
   const [editedRows, setEditedRows] = useState<number[]>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  const { data: queryData } = useQuery<EmployeeDTO[]>({
+  const {
+    data: queryData,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<EmployeeDTO[]>({
     queryKey: [EMPLOYEES_HR_KEY],
     queryFn: getEmployeesHR,
   });
@@ -112,7 +128,13 @@ const HRManagerEmployeesList = () => {
     queryData && setOriginalData(queryData);
   }, [queryData]);
 
-  const { mutate } = useMutation({
+  const {
+    mutate,
+    isError: isMutationError,
+    isSuccess: isMutationSuccess,
+    error: mutationError,
+    isPending: isMutationPending,
+  } = useMutation({
     mutationFn: (row: Row<EmployeeDTO>) => {
       const values = row.original;
       return axiosPrivate.put(hrManagerEmployeesListEndpoint, values);
@@ -200,10 +222,34 @@ const HRManagerEmployeesList = () => {
     },
   });
 
-  // console.log(data);
-  // console.log(editedRows);
-  // console.log(originalData);
-  return <TableWithFiltersAndSorting table={table} dataLength={data.length} />;
+  return (
+    <StyledHRManagerEmployeesListWrapper>
+      {isMutationPending && (
+        <StyledTableMutationStatusPending>
+          Pending...
+        </StyledTableMutationStatusPending>
+      )}
+      {isMutationError && (
+        <StyledTableMutationStatusError>
+          {getErrorMessages(mutationError)}
+        </StyledTableMutationStatusError>
+      )}
+      {isMutationSuccess && (
+        <StyledTableMutationStatusSuccess>
+          Employee data successfully changed
+        </StyledTableMutationStatusSuccess>
+      )}
+      {isLoading && <TableLoader />}
+      {isError && <TableError errorMessage={error.message} />}
+      {!isLoading && !error && (
+        <TableWithFiltersAndSorting table={table} dataLength={data.length} />
+      )}
+    </StyledHRManagerEmployeesListWrapper>
+  );
 };
 
 export default HRManagerEmployeesList;
+
+/*
+
+*/
