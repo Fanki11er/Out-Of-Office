@@ -30,7 +30,7 @@ const FormInputSelect = ({ labelText, name, optionsType }: Props) => {
   const renderOptions = (options: CombinedValue[]) => {
     return options.map((option) => {
       return (
-        <option key={option.id} value={option.value}>
+        <option key={option.id} value={option.id}>
           {option.value}
         </option>
       );
@@ -42,7 +42,7 @@ const FormInputSelect = ({ labelText, name, optionsType }: Props) => {
       {labelText}
       <StyledFormSelectInput {...field}>
         <option hidden value={""}>
-          {field.value}
+          {""}
         </option>
         {data && renderOptions(data)}
       </StyledFormSelectInput>

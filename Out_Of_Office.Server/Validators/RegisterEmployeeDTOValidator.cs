@@ -43,10 +43,10 @@ namespace Out_Of_Office.Server.Validators
 
             RuleFor(r => r.FullName).Custom((value, context) => 
             {
-                string pattern = @"^[a-zA-z]{2,}[ ][a-zA-z- ]{2,}$";
-                if (value != "" && value != null && !Regex.IsMatch(value, pattern))
+                string pattern = @"^[a-ząćęłńóżź]{2,}[- ]{1,1}[a-ząćęłńóżź]{2,}$";
+                if (value != "" && value != null && !Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase))
                 {
-                    context.AddFailure("Full Name", "Incorrect value format");
+                    context.AddFailure("Full Name", "Format: Name Surname is required");
                 }
             });
 
@@ -61,9 +61,9 @@ namespace Out_Of_Office.Server.Validators
                 }
             });
 
-            RuleFor(r => r.Position)
+           /* RuleFor(r => r.Position)
                 .NotEmpty()
-                .WithMessage("Position is required");
+                .WithMessage("Position is required");*/
 
             RuleFor(r => r.Position).Custom((value, context) =>
             {

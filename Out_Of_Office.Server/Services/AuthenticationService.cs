@@ -23,7 +23,8 @@ namespace Out_Of_Office.Server.Services
         private readonly IUserContextService _userContextService = userContextService;
         public void RegisterEmployee(RegisterEmployeeDTO employeeDTO)
         {
-            var userId = _userContextService.GetUserId();
+            //var userId = _userContextService.GetUserId();
+            var userId = 4;
 
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(employeeDTO.Password);
 
@@ -33,7 +34,7 @@ namespace Out_Of_Office.Server.Services
                 PasswordHash = passwordHash,
                 Login = employeeDTO.Login,
                 SubdivisionId = employeeDTO.Subdivision,
-                Position = employeeDTO.Position,
+                Position = (EPositions)(employeeDTO.Position),
                 Status = EStatus.Inactive,
                 PeoplePartnerId = userId,
                 OutOfOfficeBalance = 26,

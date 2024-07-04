@@ -8,7 +8,7 @@ export const StyledRegisterEmployeeForm = styled(StyledDefaultForm)`
   width: 100%;
   height: fit-content;
   width: fit-content;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto 50px auto;
 `;
 

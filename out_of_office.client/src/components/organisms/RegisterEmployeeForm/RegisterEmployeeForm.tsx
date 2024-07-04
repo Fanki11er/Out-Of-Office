@@ -21,13 +21,15 @@ const PASSWORD_FIELD_NAME = "password";
 const CONFIRM_PASSWORD_FIELD_NAME = "confirmPassword";
 const FULL_NAME_FIELD_NAME = "fullName";
 const POSITION_FIELD_NAME = "position";
+const SUBDIVISION_FIELD_NAME = "subdivision";
 
 interface RegisterEmployeeFormValues {
   [LOGIN_FIELD_NAME]: string;
   [PASSWORD_FIELD_NAME]: string;
   [CONFIRM_PASSWORD_FIELD_NAME]: string;
   [FULL_NAME_FIELD_NAME]: string;
-  [POSITION_FIELD_NAME]: string;
+  [POSITION_FIELD_NAME]: number;
+  [SUBDIVISION_FIELD_NAME]: number;
 }
 
 type RegisterEmployeeDTO = {
@@ -35,7 +37,8 @@ type RegisterEmployeeDTO = {
   Password: string;
   ConfirmPassword: string;
   FullName: string;
-  Position: string;
+  Position: number;
+  Subdivision: number;
 };
 
 export const RegisterEmployeeSchema = Yup.object().shape({
@@ -50,9 +53,13 @@ export const RegisterEmployeeSchema = Yup.object().shape({
     .oneOf([Yup.ref(PASSWORD_FIELD_NAME)], "Password does not match")
     .required("Field is required"),
   [FULL_NAME_FIELD_NAME]: Yup.string()
-    .matches(/^[a-zA-z]{2,}[ ][a-zA-z- ]{2,}$/, "Incorrect value format")
+    .matches(
+      /^[a-ząćęłńóżź]{2,}[- ]{1,1}[a-ząćęłńóżź]{2,}$/i,
+      "Format: Name Surname is required"
+    )
     .required("Field is required"),
-  [POSITION_FIELD_NAME]: Yup.string().required("Field is required"),
+  [POSITION_FIELD_NAME]: Yup.number().min(0, "Field is required"),
+  [SUBDIVISION_FIELD_NAME]: Yup.number().min(1, "Field is required"),
 });
 
 const RegisterEmployeeForm = () => {
@@ -64,7 +71,8 @@ const RegisterEmployeeForm = () => {
     [PASSWORD_FIELD_NAME]: "",
     [CONFIRM_PASSWORD_FIELD_NAME]: "",
     [FULL_NAME_FIELD_NAME]: "",
-    [POSITION_FIELD_NAME]: "",
+    [POSITION_FIELD_NAME]: -1,
+    [SUBDIVISION_FIELD_NAME]: 0,
   };
 
   const { mutate, isPending, isError, error, isSuccess } = useMutation({
@@ -87,7 +95,8 @@ const RegisterEmployeeForm = () => {
           Password: values[PASSWORD_FIELD_NAME],
           ConfirmPassword: values[CONFIRM_PASSWORD_FIELD_NAME],
           FullName: values[FULL_NAME_FIELD_NAME],
-          Position: values[POSITION_FIELD_NAME],
+          Position: Number(values[POSITION_FIELD_NAME]),
+          Subdivision: Number(values[SUBDIVISION_FIELD_NAME]),
         };
 
         mutate(registerEmployeeDTO, {
@@ -128,6 +137,11 @@ const RegisterEmployeeForm = () => {
             name={CONFIRM_PASSWORD_FIELD_NAME}
             label="Confirm password"
             type="password"
+          />
+          <FormInputSelect
+            optionsType={"subdivisions"}
+            name={SUBDIVISION_FIELD_NAME}
+            labelText={"Subdivision"}
           />
           <FormInputSelect
             optionsType={"positions"}
