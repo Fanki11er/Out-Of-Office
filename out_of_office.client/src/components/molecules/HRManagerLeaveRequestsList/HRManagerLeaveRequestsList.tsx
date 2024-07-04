@@ -17,6 +17,10 @@ import { LEAVE_REQUESTS_HR_KEY } from "../../../api/QueryKeys";
 import TableLoader from "../TableLoader/TableLoader";
 import TableError from "../TableError/TableError";
 import TableWithFiltersAndSorting from "../TableWithFiltersAndSorting/TableWithFiltersAndSorting";
+import DetailsCell from "../DetailsCell/DetailsCell";
+import useModal from "../../../hooks/useModal";
+import { createPortal } from "react-dom";
+import Modal from "../Modal/Modal";
 
 const mockedData: LeaveRequestDTO[] = [
   {
@@ -98,7 +102,7 @@ const columns = [
   }),
   columnHelper.display({
     header: "Details",
-
+    cell: DetailsCell,
     size: 100,
   }),
 ];
@@ -107,6 +111,21 @@ const HRManagerLeaveRequestsList = () => {
   const axiosPrivate = useAxiosPrivate();
   const [data, setData] = useState<LeaveRequestDTO[]>(mockedData);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [selectedRow, setSelectedRow] = useState(-1);
+  //const { isModalOpen, handleOpenModal, handleCloseModal } = useModal();
+  console.log(selectedRow);
+  const handleSelectRow = (rowIndex: number) => {
+    setSelectedRow(rowIndex);
+  };
+
+  const handleDeselectRow = () => {
+    setSelectedRow(-1);
+  };
+
+  const modal = createPortal(
+    <Modal handleCloseModal={handleDeselectRow} />,
+    document.body
+  );
 
   const getLeaveRequestsListHR = async () => {
     const response = await axiosPrivate.get("");
@@ -142,6 +161,9 @@ const HRManagerLeaveRequestsList = () => {
       },
       columnFilters,
     },
+    meta: {
+      handleSelectRow,
+    },
   });
 
   return (
@@ -152,6 +174,7 @@ const HRManagerLeaveRequestsList = () => {
         <TableWithFiltersAndSorting table={table} dataLength={data.length} />
       )} */}
       <TableWithFiltersAndSorting table={table} dataLength={data.length} />
+      {selectedRow >= 0 && modal}
     </StyledHRManagerLeaveRequestsListWrapper>
   );
 };
