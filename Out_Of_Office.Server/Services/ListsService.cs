@@ -56,8 +56,8 @@ namespace Out_Of_Office.Server.Services
                 .FirstOrDefault(e => e.Id == employeeDTO.Id) ?? 
                 throw new BadHttpRequestException("Employee for update entry not found");
 
-            if (employeeForUpdate.Position != EPositions.HRManager &&
-                employeeForUpdate.Position != EPositions.HRDirector &&
+            if (employeeForUpdate.Position != EPositions.HR_Manager &&
+                employeeForUpdate.Position != EPositions.HR_Director &&
                 employeeDTO.PeoplePartner is null)
             {
                 throw new BadHttpRequestException("Only HR Director position not need People Partner entry");
@@ -99,7 +99,7 @@ namespace Out_Of_Office.Server.Services
             List<CombinedValueDTO> combinedValueDTOs = [];
 
             var peoplePartners = _dataContext.Employees
-                .Where(e => e.Position == EPositions.HRManager)
+                .Where(e => e.Position == EPositions.HR_Manager)
                 .ToList();
 
             foreach (var peoplePartner in peoplePartners)
@@ -125,7 +125,7 @@ namespace Out_Of_Office.Server.Services
                {
                    Id = ((int)t),
                    Value = t.ToString()
-               }).ToList();
+               }).Where(p => p.Value != EPositions.HR_Director.ToString()).ToList();
             return combinedValueDTOs;
         }
 

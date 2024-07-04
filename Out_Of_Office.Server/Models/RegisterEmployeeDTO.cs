@@ -10,8 +10,6 @@ namespace Out_Of_Office.Server.Models
         public  required string FullName { get; set; }
         public required int Subdivision { get; set; }
         public required EPositions Position { get; set; }
-        public required EStatus Status { get; set; }
-        public required int PeoplePartner { get; set; }
         public IFormFile? ImageFile { get; set; }
     }
 }

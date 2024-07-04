@@ -46,7 +46,7 @@ namespace Out_Of_Office.Server.Validators
                 string pattern = @"^[a-zA-z]{2,}[ ][a-zA-z- ]{2,}$";
                 if (value != "" && value != null && !Regex.IsMatch(value, pattern))
                 {
-                    context.AddFailure("Full Name", "Incorrect value");
+                    context.AddFailure("Full Name", "Incorrect value format");
                 }
             });
 
@@ -73,34 +73,6 @@ namespace Out_Of_Office.Server.Validators
                     context.AddFailure("Position", "Position does not exist");
                 }
             });
-
-            RuleFor(r => r.Status)
-               .NotEmpty()
-               .WithMessage("Status is required");
-
-            RuleFor(r => r.Status).Custom((value, context) =>
-            {
-                var statusExists = Enum.IsDefined(typeof(EStatus), value);
-                if (!statusExists)
-                {
-                    context.AddFailure("Status", "Status does not exist");
-                }
-            });
-
-            RuleFor(r => r.PeoplePartner)
-                .NotEmpty()
-                .WithMessage("People partner is required");
-
-            RuleFor(r => r.PeoplePartner).Custom((value, context) =>
-            {
-                var peopePartnerExists = _dataContext.Employees.Any(p => p.Id == value && p.Position == EPositions.HRManager );
-                if (!peopePartnerExists)
-                {
-                    context.AddFailure("People Partner", "People Partner does not exist");
-                }
-            });
-
         }
-
     }
 }

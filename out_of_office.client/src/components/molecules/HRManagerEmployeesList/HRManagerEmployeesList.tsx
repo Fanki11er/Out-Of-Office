@@ -32,6 +32,7 @@ import {
   StyledTableMutationStatusPending,
   StyledTableMutationStatusSuccess,
 } from "./HRManagerEmployeesList.styles";
+import RegisterEmployeeForm from "../../organisms/RegisterEmployeeForm/RegisterEmployeeForm";
 
 const getEmployeesHR = async () => {
   const response = await axiosPrivate.get(hrManagerEmployeesListEndpoint);
@@ -65,7 +66,7 @@ const columns = [
   columnHelper.accessor("position", {
     header: "Position",
     cell: SelectCell,
-    size: 150,
+    size: 170,
     meta: {
       optionsType: "positions",
       filterVariant: "select",
@@ -224,6 +225,7 @@ const HRManagerEmployeesList = () => {
 
   return (
     <StyledHRManagerEmployeesListWrapper>
+      <RegisterEmployeeForm />
       {isMutationPending && (
         <StyledTableMutationStatusPending>
           Pending...

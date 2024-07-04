@@ -1,9 +1,9 @@
 import { CellContext } from "@tanstack/react-table";
 import { CombinedValue, EmployeeDTO } from "../../../types/outOffOffice";
 import { useQuery } from "@tanstack/react-query";
-import { axiosPrivate } from "../../../api/axios";
 import { getOptionsFromApi } from "../../../api/apiEndpoints";
 import { StyledDefaultSelect } from "../../atoms/StyledDefaultSelect/StyledDefaultSelect.styles";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 
 const SelectCell = ({
   getValue,
@@ -11,6 +11,7 @@ const SelectCell = ({
   column,
   table,
 }: CellContext<EmployeeDTO, CombinedValue | undefined>) => {
+  const axiosPrivate = useAxiosPrivate();
   const cellValue = getValue();
 
   const optionsType = column.columnDef.meta?.optionsType || "";

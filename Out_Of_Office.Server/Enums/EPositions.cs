@@ -5,8 +5,8 @@ namespace Out_Of_Office.Server.Enums
     public enum EPositions
     {
         Employee = 0,
-        ProjectManager = 1,
-        HRManager = 2,
-        HRDirector = 3,
+        Project_Manager = 1,
+        HR_Manager = 2,
+        HR_Director = 3,
     }
 }

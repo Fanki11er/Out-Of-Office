@@ -6,6 +6,8 @@ export const StyledHRManagerEmployeesListWrapper = styled.div`
   flex-direction: column;
   row-gap: 10px;
   padding-top: 100px;
+  max-width: 1920px;
+  overflow: auto;
 `;
 
 const DefaultTableMutationStatus = styled.span`

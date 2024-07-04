@@ -62,7 +62,8 @@ namespace Out_Of_Office.Server.Validators
             {
                if (value is not null)
                 {
-                    var peopePartnerExists = _dataContext.Employees.Any(p => p.Id == value.Id && p.Position == EPositions.HRManager);
+                    var peopePartnerExists = _dataContext.Employees
+                    .Any(p => p.Id == value.Id && p.Position == EPositions.HR_Manager);
                     if (!peopePartnerExists)
                     {
                         context.AddFailure("People Partner", "People Partner does not exist");

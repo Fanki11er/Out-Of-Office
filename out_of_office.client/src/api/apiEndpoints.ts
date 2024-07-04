@@ -4,6 +4,8 @@ export const loginEndpoint = "/authentication/login";
 
 export const hrManagerEmployeesListEndpoint = "/lists/employeesHR";
 
+export const registerNewEmployeeApiEndpoint = "/authentication/register";
+
 export const getOptionsFromApi = (optionType: string) => {
   return `/lists/${optionType}`;
 };

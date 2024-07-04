@@ -11,6 +11,7 @@ import { StyledFormLoadingIndicator } from "../../atoms/StyledDefaultLoadingIndi
 import { loginEndpoint } from "../../../api/apiEndpoints";
 import { AuthenticatedUser } from "../../../providers/AuthProvider";
 import { routerPaths } from "../../../router/routerPaths";
+import { getErrorMessages } from "../../../Utilities/utilities";
 
 interface LoginFormValues {
   login: string;
@@ -70,7 +71,7 @@ const LoginForm = () => {
     >
       <StyledLoginForm>
         {isError && !isPending && (
-          <StyledFormError>{error.message}</StyledFormError>
+          <StyledFormError>{getErrorMessages(error)}</StyledFormError>
         )}
         <FormInput name={LOGIN_FIELD_NAME} label="Login" />
         <FormInput
