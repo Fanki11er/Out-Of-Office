@@ -25,6 +25,7 @@ const FormInputSelect = ({ labelText, name, optionsType }: Props) => {
   const { data } = useQuery<CombinedValue[]>({
     queryKey: [optionsType],
     queryFn: getOptions,
+    staleTime: 60000,
   });
 
   const renderOptions = (options: CombinedValue[]) => {

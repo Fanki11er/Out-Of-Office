@@ -33,6 +33,7 @@ import {
   StyledTableMutationStatusSuccess,
 } from "./HRManagerEmployeesList.styles";
 import RegisterEmployeeForm from "../../organisms/RegisterEmployeeForm/RegisterEmployeeForm";
+import { FULL_NAME_PATTERN } from "../../Constants/Constants";
 
 const getEmployeesHR = async () => {
   const response = await axiosPrivate.get(hrManagerEmployeesListEndpoint);
@@ -45,9 +46,7 @@ const columns = [
   columnHelper.accessor("id", {}),
   columnHelper.accessor("fullName", {
     header: "Full Name",
-    cell: (info) => (
-      <InputCell cell={info} pattern={"^[a-zA-z]{2,}[ ][a-zA-z- ]{2,}$"} />
-    ),
+    cell: (info) => <InputCell cell={info} pattern={FULL_NAME_PATTERN} />,
     meta: {
       filterVariant: "text",
     },

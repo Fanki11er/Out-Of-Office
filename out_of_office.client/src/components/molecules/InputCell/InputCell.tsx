@@ -5,7 +5,7 @@ import { EmployeeDTO } from "../../../types/outOffOffice";
 
 type Props = {
   cell: CellContext<EmployeeDTO, string>;
-  pattern?: string;
+  pattern?: RegExp;
 };
 const InputCell = (props: Props) => {
   const {
@@ -19,10 +19,9 @@ const InputCell = (props: Props) => {
   const [value, setValue] = useState(initialValue);
   const [error, setError] = useState("");
 
-  const validate = (value: string, pattern?: string) => {
+  const validate = (value: string, pattern?: RegExp) => {
     if (pattern) {
-      const expression = new RegExp(pattern);
-      const result = expression.test(value);
+      const result = pattern.test(value);
       if (!result) {
         !error &&
           setError(
@@ -40,7 +39,16 @@ const InputCell = (props: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialValue]);
 
-  const handleBlur = () => {
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      handleUpdate();
+    }, 500);
+
+    return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  const handleUpdate = () => {
     if (value !== initialValue) {
       meta &&
         meta.updateDataFromInput &&
@@ -57,7 +65,6 @@ const InputCell = (props: Props) => {
   return (
     <StyledInput
       onChange={(e) => handleChange(e)}
-      onBlur={handleBlur}
       onFocus={(e) => validate(e.target.value, pattern)}
       value={value}
       title={error ? error : ""}

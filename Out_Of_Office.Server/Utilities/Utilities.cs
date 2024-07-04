@@ -7,6 +7,9 @@ namespace Out_Of_Office.Server.Utilities
 {
     public static class Utilities
     {
+        public const string FULL_NAME_PATTERN = @"^[a-ząćęłńóżź]{2,}[- ]{1,1}[a-ząćęłńóżź]{2,}$";
+
+        //public static string FULL_NAME_PATTERN = PATTERN;
         public static EmployeeDTO CreateEmployeeDTO(Employee employee, Employee? peoplePartner)
         {
             EmployeeDTO dto = new()

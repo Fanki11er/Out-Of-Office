@@ -63,6 +63,39 @@ namespace Out_Of_Office.Server.Services
                 throw new BadHttpRequestException("Only HR Director position not need People Partner entry");
             }
 
+            if (employeeForUpdate.Position == EPositions.HR_Manager)
+            {
+                var newPosition = (EPositions)employeeDTO.Position.Id;
+
+                if(newPosition != EPositions.HR_Director)
+                {
+                    var hasEmployees = _dataContext.Employees
+                        .Any(e => e.PeoplePartnerId == employeeForUpdate.Id);
+
+                    if (hasEmployees)
+                    {
+                        throw new BadHttpRequestException("Can't change position from HR Manager if there are connected employees");
+                    }
+                }   
+            }
+
+            if (employeeForUpdate.Position == EPositions.Project_Manager)
+            {
+                var newPosition = (EPositions)employeeDTO.Position.Id;
+
+                if (newPosition != EPositions.Project_Manager)
+                {
+                    var hasProjets = _dataContext.Projects
+                        .Any(e => e.ProjectManagerId == employeeForUpdate.Id);
+
+                    if (hasProjets)
+                    {
+                        throw new BadHttpRequestException("Can't change position from Project Manager if there are connected projects");
+                    }
+                }
+            }
+
+
             employeeForUpdate.FullName = employeeDTO.FullName;
             employeeForUpdate.PeoplePartnerId = employeeDTO.PeoplePartner?.Id;
             employeeForUpdate.Status = (EStatus)employeeDTO.Status.Id;

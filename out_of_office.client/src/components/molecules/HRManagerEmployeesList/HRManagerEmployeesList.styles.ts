@@ -8,6 +8,7 @@ export const StyledHRManagerEmployeesListWrapper = styled.div`
   padding-top: 100px;
   max-width: 1920px;
   overflow: auto;
+  padding-bottom: 150px;
 `;
 
 const DefaultTableMutationStatus = styled.span`

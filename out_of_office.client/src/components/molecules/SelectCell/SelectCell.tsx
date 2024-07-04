@@ -24,6 +24,7 @@ const SelectCell = ({
   const { data } = useQuery<CombinedValue[]>({
     queryKey: [optionsType],
     queryFn: getOptions,
+    staleTime: 60000,
   });
 
   const handleChange = (id: string) => {

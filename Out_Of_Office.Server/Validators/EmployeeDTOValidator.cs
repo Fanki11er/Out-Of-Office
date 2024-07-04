@@ -4,6 +4,7 @@ using FluentValidation;
 using Out_Of_Office.Server.Data;
 using Out_Of_Office.Server.Enums;
 using Out_Of_Office.Server.Models;
+using Out_Of_Office.Server.Utilities;
 using System.Text.RegularExpressions;
 
 namespace Out_Of_Office.Server.Validators
@@ -18,7 +19,8 @@ namespace Out_Of_Office.Server.Validators
 
             RuleFor(r => r.FullName).Custom((value, context) =>
             {
-                string pattern = @"^[a-ząćęłńóżź]{2,}[- ]{1,1}[a-ząćęłńóżź]{2,}$";
+                string pattern = Utilities.Utilities.FULL_NAME_PATTERN;
+
                 if (value != null && !Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase))
                 {
                     context.AddFailure("Full Name", "Format: Name Surname is required");

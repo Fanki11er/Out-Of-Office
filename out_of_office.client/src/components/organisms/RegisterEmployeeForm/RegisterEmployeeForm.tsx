@@ -15,6 +15,7 @@ import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import FormInputSelect from "../../molecules/FormSelectInput/FormSelectInput";
 import { registerNewEmployeeApiEndpoint } from "../../../api/apiEndpoints";
 import { EMPLOYEES_HR_KEY } from "../../../api/QueryKeys";
+import { FULL_NAME_PATTERN } from "../../Constants/Constants";
 
 const LOGIN_FIELD_NAME = "login";
 const PASSWORD_FIELD_NAME = "password";
@@ -53,10 +54,7 @@ export const RegisterEmployeeSchema = Yup.object().shape({
     .oneOf([Yup.ref(PASSWORD_FIELD_NAME)], "Password does not match")
     .required("Field is required"),
   [FULL_NAME_FIELD_NAME]: Yup.string()
-    .matches(
-      /^[a-ząćęłńóżź]{2,}[- ]{1,1}[a-ząćęłńóżź]{2,}$/i,
-      "Format: Name Surname is required"
-    )
+    .matches(FULL_NAME_PATTERN, "Format: Name Surname is required")
     .required("Field is required"),
   [POSITION_FIELD_NAME]: Yup.number().min(0, "Field is required"),
   [SUBDIVISION_FIELD_NAME]: Yup.number().min(1, "Field is required"),
