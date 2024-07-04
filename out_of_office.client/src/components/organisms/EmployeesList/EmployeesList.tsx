@@ -1,11 +1,11 @@
+import { StyledDefaultListWrapper } from "../../atoms/StyledDefaultListWrapper/StyledDefaultListWrapper.styles";
 import HRManagerEmployeesList from "../../molecules/HRManagerEmployeesList/HRManagerEmployeesList";
-import { StyledEmployeesList } from "./EmployeesList.styles";
 
 const EmployeesList = () => {
   return (
-    <StyledEmployeesList>
+    <StyledDefaultListWrapper>
       <HRManagerEmployeesList />
-    </StyledEmployeesList>
+    </StyledDefaultListWrapper>
   );
 };
 

@@ -15,6 +15,16 @@ export type EmployeeDTO = {
   peoplePartner?: CombinedValue;
 };
 
+export type LeaveRequestDTO = {
+  id: number;
+  employee: string;
+  absenceReason: string;
+  startDate: string;
+  endDate: string;
+  status: string;
+  comment: string;
+};
+
 export type ErrorData = {
   errors: {
     [key: string]: string[];
@@ -41,6 +51,11 @@ declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     optionsType?: string;
-    filterVariant?: "text" | "range" | "select";
+    filterVariant?:
+      | "text"
+      | "range"
+      | "combinedSelect"
+      | "standardSelect"
+      | "number";
   }
 }

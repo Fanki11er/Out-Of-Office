@@ -126,7 +126,6 @@ namespace Out_Of_Office.Server.Services
             return combinedValueDTOs;
             
         }
-
         public List<CombinedValueDTO> GetPeoplePartnerOptions()
         {
             List<CombinedValueDTO> combinedValueDTOs = [];

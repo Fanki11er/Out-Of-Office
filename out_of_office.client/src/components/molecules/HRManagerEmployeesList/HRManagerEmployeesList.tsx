@@ -15,7 +15,6 @@ import EditCell from "../EditCell/EditCell";
 import InputCell from "../InputCell/InputCell";
 import SelectCell from "../SelectCell/SelectCell";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { axiosPrivate } from "../../../api/axios";
 import { hrManagerEmployeesListEndpoint } from "../../../api/apiEndpoints";
 import { EMPLOYEES_HR_KEY } from "../../../api/QueryKeys";
 
@@ -34,11 +33,7 @@ import {
 } from "./HRManagerEmployeesList.styles";
 import RegisterEmployeeForm from "../../organisms/RegisterEmployeeForm/RegisterEmployeeForm";
 import { FULL_NAME_PATTERN } from "../../Constants/Constants";
-
-const getEmployeesHR = async () => {
-  const response = await axiosPrivate.get(hrManagerEmployeesListEndpoint);
-  return response.data;
-};
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 
 const columnHelper = createColumnHelper<EmployeeDTO>();
 
@@ -58,7 +53,7 @@ const columns = [
     cell: SelectCell,
     meta: {
       optionsType: "subdivisions",
-      filterVariant: "select",
+      filterVariant: "combinedSelect",
     },
     filterFn: filterCombinedValue,
   }),
@@ -68,7 +63,7 @@ const columns = [
     size: 170,
     meta: {
       optionsType: "positions",
-      filterVariant: "select",
+      filterVariant: "combinedSelect",
     },
     filterFn: filterCombinedValue,
   }),
@@ -78,7 +73,7 @@ const columns = [
     cell: SelectCell,
     meta: {
       optionsType: "statuses",
-      filterVariant: "select",
+      filterVariant: "combinedSelect",
     },
     filterFn: filterCombinedValue,
   }),
@@ -88,7 +83,7 @@ const columns = [
     cell: SelectCell,
     meta: {
       optionsType: "peoplePartners",
-      filterVariant: "select",
+      filterVariant: "combinedSelect",
     },
     filterFn: filterCombinedValue,
   }),
@@ -112,6 +107,12 @@ const HRManagerEmployeesList = () => {
   const [originalData, setOriginalData] = useState<EmployeeDTO[]>([]);
   const [editedRows, setEditedRows] = useState<number[]>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const axiosPrivate = useAxiosPrivate();
+
+  const getEmployeesHR = async () => {
+    const response = await axiosPrivate.get(hrManagerEmployeesListEndpoint);
+    return response.data;
+  };
 
   const {
     data: queryData,

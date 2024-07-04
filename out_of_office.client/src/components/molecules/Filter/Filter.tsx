@@ -13,10 +13,13 @@ function Filter<T>({ column }: Props<T>) {
   const { filterVariant } = column.columnDef.meta ?? {};
 
   const facetedValues = column.getFacetedUniqueValues();
-  const sortedUniqueValues = useMemo(() => {
+
+  const sortedUniqueCombinedValues = useMemo(() => {
     const uniqueValues: CombinedValue[] = [];
     const columnValues =
-      filterVariant === "select" ? Array.from(facetedValues.keys()) : [];
+      filterVariant === "combinedSelect"
+        ? Array.from(facetedValues.keys())
+        : [];
     columnValues.forEach((e) => {
       if (
         !uniqueValues.find((value) => {
@@ -29,6 +32,15 @@ function Filter<T>({ column }: Props<T>) {
 
     return uniqueValues;
   }, [facetedValues, filterVariant]);
+
+  const sortedUniqueStandardValues = useMemo(
+    () =>
+      filterVariant === "range"
+        ? []
+        : Array.from(facetedValues.keys()).sort().slice(0, 5000),
+
+    [facetedValues, filterVariant]
+  );
 
   return (
     <>
@@ -58,15 +70,29 @@ function Filter<T>({ column }: Props<T>) {
           />
         </>
       )}
-      {filterVariant === "select" && (
+      {filterVariant === "combinedSelect" && (
         <StyledDefaultSelect
           onChange={(e) => column.setFilterValue(e.target.value)}
           value={columnFilterValue?.toString()}
         >
           <option value="">All</option>
-          {sortedUniqueValues.map((value) => (
+          {sortedUniqueCombinedValues.map((value) => (
             <option value={value.id} key={value.value}>
               {value.value}
+            </option>
+          ))}
+        </StyledDefaultSelect>
+      )}
+
+      {filterVariant === "standardSelect" && (
+        <StyledDefaultSelect
+          onChange={(e) => column.setFilterValue(e.target.value)}
+          value={columnFilterValue?.toString()}
+        >
+          <option value="">All</option>
+          {sortedUniqueStandardValues.map((value) => (
+            <option value={value} key={value}>
+              {value}
             </option>
           ))}
         </StyledDefaultSelect>
@@ -76,6 +102,19 @@ function Filter<T>({ column }: Props<T>) {
           onChange={(value) => column.setFilterValue(value)}
           placeholder={`Search...`}
           initialValue={(columnFilterValue ?? "") as string}
+        />
+      )}
+      {filterVariant === "number" && (
+        <DebouncedInput
+          type="number"
+          initialValue={(columnFilterValue as [number, number])?.[0] ?? ""}
+          onChange={(value) =>
+            column.setFilterValue((prev: [number, number]) => [
+              value,
+              prev?.[1],
+            ])
+          }
+          placeholder={`Id`}
         />
       )}
     </>
