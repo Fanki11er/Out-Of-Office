@@ -8,22 +8,23 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { ApproveRequestDTO } from "../../../types/outOffOffice";
+import DetailsCell from "../DetailsCell/DetailsCell";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import { LeaveRequestDTO } from "../../../types/outOffOffice";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import Modal from "../Modal/Modal";
+import { hrManagerApproveRequestsListEndpoint } from "../../../api/apiEndpoints";
 import { useQuery } from "@tanstack/react-query";
-import { LEAVE_REQUESTS_HR_KEY } from "../../../api/QueryKeys";
+import { APPROVE_REQUESTS_HR_KEY } from "../../../api/QueryKeys";
+import { StyledDefaultListContainer } from "../../atoms/StyledDefaultListContainer/StyledDefaultListContainer.styles";
 import TableLoader from "../TableLoader/TableLoader";
 import TableError from "../TableError/TableError";
 import TableWithFiltersAndSorting from "../TableWithFiltersAndSorting/TableWithFiltersAndSorting";
-import DetailsCell from "../DetailsCell/DetailsCell";
-import { createPortal } from "react-dom";
-import Modal from "../Modal/Modal";
-import LeaveRequestDetails from "../LeaveRequestDetails/LeaveRequestDetails";
-import { hrManagerLeaveRequestsListEndpoint } from "../../../api/apiEndpoints";
-import { StyledDefaultListContainer } from "../../atoms/StyledDefaultListContainer/StyledDefaultListContainer.styles";
+import ApproveRequestDetails from "../ApproveRequestDetails/ApproveRequestDetails";
+import ApproveRequestForm from "../../organisms/ApproveRequestForm/ApproveRequestForm";
 
-const columnHelper = createColumnHelper<LeaveRequestDTO>();
+const columnHelper = createColumnHelper<ApproveRequestDTO>();
 
 const columns = [
   columnHelper.accessor("id", {
@@ -34,39 +35,22 @@ const columns = [
     },
     size: 100,
   }),
-  columnHelper.accessor("employee", {
-    header: "Employee",
+  columnHelper.accessor("approver", {
+    header: "Approver",
     cell: (info) => info.getValue(),
     meta: {
       filterVariant: "standardSelect",
     },
     size: 200,
   }),
-  columnHelper.accessor("absenceReason", {
-    header: "Absence reason",
+  columnHelper.accessor("leaveRequest", {
+    header: "Leave request",
     size: 180,
     cell: (info) => info.getValue(),
     meta: {
-      filterVariant: "standardSelect",
+      filterVariant: "number",
     },
   }),
-  columnHelper.accessor("startDate", {
-    header: "Start date",
-    cell: (info) => info.getValue(),
-    size: 170,
-    meta: {
-      filterVariant: "standardSelect",
-    },
-  }),
-  columnHelper.accessor("endDate", {
-    header: "End date",
-    size: 140,
-    cell: (info) => info.getValue(),
-    meta: {
-      filterVariant: "standardSelect",
-    },
-  }),
-
   columnHelper.accessor("status", {
     header: "Status",
     size: 200,
@@ -87,11 +71,12 @@ const columns = [
   }),
 ];
 
-const HRManagerLeaveRequestsList = () => {
+const HRManagerApproveRequestsList = () => {
   const axiosPrivate = useAxiosPrivate();
-  const [data, setData] = useState<LeaveRequestDTO[]>([]);
+  const [data, setData] = useState<ApproveRequestDTO[]>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [selectedRowId, setSelectedRowId] = useState(-1);
+
   const handleSelectRow = (rowIndex: number) => {
     setSelectedRowId(rowIndex);
   };
@@ -110,15 +95,25 @@ const HRManagerLeaveRequestsList = () => {
     return selectedRow;
   };
 
-  const modal = createPortal(
-    <Modal handleCloseModal={handleDeselectRow}>
-      {<LeaveRequestDetails leaveRequest={getSelectedRow(selectedRowId)} />}
-    </Modal>,
-    document.body
-  );
+  const renderModal = (selectedRowId: number) => {
+    const row = getSelectedRow(selectedRowId);
+    const modal = createPortal(
+      <Modal handleCloseModal={handleDeselectRow}>
+        {row?.status === "new" ? (
+          <ApproveRequestForm approveRequest={row} />
+        ) : (
+          <ApproveRequestDetails approveRequest={row} />
+        )}
+      </Modal>,
+      document.body
+    );
+    return modal;
+  };
 
   const getLeaveRequestsListHR = async () => {
-    const response = await axiosPrivate.get(hrManagerLeaveRequestsListEndpoint);
+    const response = await axiosPrivate.get(
+      hrManagerApproveRequestsListEndpoint
+    );
     return response.data;
   };
 
@@ -127,8 +122,8 @@ const HRManagerLeaveRequestsList = () => {
     isLoading,
     isError,
     error,
-  } = useQuery<LeaveRequestDTO[]>({
-    queryKey: [LEAVE_REQUESTS_HR_KEY],
+  } = useQuery<ApproveRequestDTO[]>({
+    queryKey: [APPROVE_REQUESTS_HR_KEY],
     queryFn: getLeaveRequestsListHR,
   });
 
@@ -163,9 +158,9 @@ const HRManagerLeaveRequestsList = () => {
       {!isLoading && !error && (
         <TableWithFiltersAndSorting table={table} dataLength={data.length} />
       )}
-      {selectedRowId >= 0 && modal}
+      {selectedRowId >= 0 && renderModal(selectedRowId)}
     </StyledDefaultListContainer>
   );
 };
 
-export default HRManagerLeaveRequestsList;
+export default HRManagerApproveRequestsList;

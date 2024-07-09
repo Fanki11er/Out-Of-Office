@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const StyledHRManagerLeaveRequestsListWrapper = styled.div`
+export const StyledDefaultListContainer = styled.div`
   display: flex;
   width: 100%;
   flex-direction: column;

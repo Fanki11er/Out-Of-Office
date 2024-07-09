@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const StyledLeaveRequestDetails = styled.div`
+export const StyledRequestDetails = styled.div`
   display: flex;
   flex-direction: column;
   row-gap: 10px;
@@ -13,7 +13,7 @@ export const StyledLeaveRequestDetails = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
 `;
 
-export const StyledLeaveRequestDetailsComment = styled.p`
+export const StyledRequestDetailsComment = styled.p`
   width: 90%;
   max-width: 400px;
 `;

@@ -26,7 +26,6 @@ import TableWithFiltersAndSorting from "../TableWithFiltersAndSorting/TableWithF
 import TableLoader from "../TableLoader/TableLoader";
 import TableError from "../TableError/TableError";
 import {
-  StyledHRManagerEmployeesListWrapper,
   StyledTableMutationStatusError,
   StyledTableMutationStatusPending,
   StyledTableMutationStatusSuccess,
@@ -34,6 +33,7 @@ import {
 import RegisterEmployeeForm from "../../organisms/RegisterEmployeeForm/RegisterEmployeeForm";
 import { FULL_NAME_PATTERN } from "../../Constants/Constants";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { StyledDefaultListContainer } from "../../atoms/StyledDefaultListContainer/StyledDefaultListContainer.styles";
 
 const columnHelper = createColumnHelper<EmployeeDTO>();
 
@@ -224,7 +224,7 @@ const HRManagerEmployeesList = () => {
   });
 
   return (
-    <StyledHRManagerEmployeesListWrapper>
+    <StyledDefaultListContainer>
       <RegisterEmployeeForm />
       {isMutationPending && (
         <StyledTableMutationStatusPending>
@@ -246,12 +246,8 @@ const HRManagerEmployeesList = () => {
       {!isLoading && !error && (
         <TableWithFiltersAndSorting table={table} dataLength={data.length} />
       )}
-    </StyledHRManagerEmployeesListWrapper>
+    </StyledDefaultListContainer>
   );
 };
 
 export default HRManagerEmployeesList;
-
-/*
-
-*/

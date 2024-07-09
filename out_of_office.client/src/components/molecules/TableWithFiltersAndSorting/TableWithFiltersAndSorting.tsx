@@ -7,7 +7,7 @@ import {
 } from "../../atoms/StyledDefaultTableHeaderCell/StyledDefaultTableHeaderCell.styled";
 import { StyledDefaultTable } from "../../atoms/StyledDefaultTable/StyledDefaultTable.styles";
 import { StyledDefaultTableCell } from "../../atoms/StyledDefaultTableCell/StyledDefaultTableCell.styles";
-import { StyledIcon } from "../../atoms/StyledIcon.styles";
+import { StyledIcon } from "../../atoms/StyledIcon/StyledIcon.styles";
 import Filter from "../Filter/Filter";
 import { Header, Table, flexRender } from "@tanstack/react-table";
 import {

@@ -8,6 +8,8 @@ export const hrManagerEmployeesListEndpoint = "/lists/employeesHR";
 
 export const hrManagerLeaveRequestsListEndpoint = "/lists/leaveRequestsHR";
 
+export const hrManagerApproveRequestsListEndpoint = "/lists/approveRequestsHR";
+
 export const getOptionsFromApi = (optionType: string) => {
   return `/lists/${optionType}`;
 };

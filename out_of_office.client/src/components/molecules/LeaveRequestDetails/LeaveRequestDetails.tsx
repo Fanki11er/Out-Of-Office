@@ -1,15 +1,15 @@
 import { LeaveRequestDTO } from "../../../types/outOffOffice";
 import {
-  StyledLeaveRequestDetails,
-  StyledLeaveRequestDetailsComment,
-} from "./LeaveRequestDetails.styles";
+  StyledRequestDetails,
+  StyledRequestDetailsComment,
+} from "../../atoms/StyledRequestDetails/StyledRequestDetails.styles";
 
 type Props = {
   leaveRequest: LeaveRequestDTO | null;
 };
 const LeaveRequestDetails = ({ leaveRequest }: Props) => {
   return leaveRequest ? (
-    <StyledLeaveRequestDetails>
+    <StyledRequestDetails>
       <h2>Leave Request</h2>
       <h3>
         {`Id: 
@@ -32,11 +32,11 @@ const LeaveRequestDetails = ({ leaveRequest }: Props) => {
         {leaveRequest.status}
       </span>
       {leaveRequest.comment && (
-        <StyledLeaveRequestDetailsComment>
+        <StyledRequestDetailsComment>
           {leaveRequest.comment}
-        </StyledLeaveRequestDetailsComment>
+        </StyledRequestDetailsComment>
       )}
-    </StyledLeaveRequestDetails>
+    </StyledRequestDetails>
   ) : (
     <span>No data</span>
   );
