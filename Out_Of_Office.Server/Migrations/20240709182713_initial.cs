@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Out_Of_Office.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateDatabase : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -51,29 +51,6 @@ namespace Out_Of_Office.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LeaveRequests",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AbsenceReasonId = table.Column<int>(type: "int", nullable: false),
-                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    EndDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LeaveRequests", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_LeaveRequests_AbsenceReasons_AbsenceReasonId",
-                        column: x => x.AbsenceReasonId,
-                        principalTable: "AbsenceReasons",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Employees",
                 columns: table => new
                 {
@@ -101,29 +78,31 @@ namespace Out_Of_Office.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ApprovalRequests",
+                name: "LeaveRequests",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ApproverId = table.Column<int>(type: "int", nullable: false),
-                    LeaveRequestId = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    AbsenceReasonId = table.Column<int>(type: "int", nullable: false),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    EndDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ApprovalRequests", x => x.Id);
+                    table.PrimaryKey("PK_LeaveRequests", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ApprovalRequests_Employees_ApproverId",
-                        column: x => x.ApproverId,
-                        principalTable: "Employees",
+                        name: "FK_LeaveRequests_AbsenceReasons_AbsenceReasonId",
+                        column: x => x.AbsenceReasonId,
+                        principalTable: "AbsenceReasons",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ApprovalRequests_LeaveRequests_LeaveRequestId",
-                        column: x => x.LeaveRequestId,
-                        principalTable: "LeaveRequests",
+                        name: "FK_LeaveRequests_Employees_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "Employees",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -158,10 +137,27 @@ namespace Out_Of_Office.Server.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_ApprovalRequests_ApproverId",
-                table: "ApprovalRequests",
-                column: "ApproverId");
+            migrationBuilder.CreateTable(
+                name: "ApprovalRequests",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ApproverId = table.Column<int>(type: "int", nullable: false),
+                    LeaveRequestId = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApprovalRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ApprovalRequests_LeaveRequests_LeaveRequestId",
+                        column: x => x.LeaveRequestId,
+                        principalTable: "LeaveRequests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApprovalRequests_LeaveRequestId",
@@ -177,6 +173,11 @@ namespace Out_Of_Office.Server.Migrations
                 name: "IX_LeaveRequests_AbsenceReasonId",
                 table: "LeaveRequests",
                 column: "AbsenceReasonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LeaveRequests_EmployeeId",
+                table: "LeaveRequests",
+                column: "EmployeeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_ProjectManagerId",
@@ -202,13 +203,13 @@ namespace Out_Of_Office.Server.Migrations
                 name: "LeaveRequests");
 
             migrationBuilder.DropTable(
-                name: "Employees");
-
-            migrationBuilder.DropTable(
                 name: "ProjectTypes");
 
             migrationBuilder.DropTable(
                 name: "AbsenceReasons");
+
+            migrationBuilder.DropTable(
+                name: "Employees");
 
             migrationBuilder.DropTable(
                 name: "Subdivisions");

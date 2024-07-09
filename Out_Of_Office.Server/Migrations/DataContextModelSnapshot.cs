@@ -62,8 +62,6 @@ namespace Out_Of_Office.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApproverId");
-
                     b.HasIndex("LeaveRequestId");
 
                     b.ToTable("ApprovalRequests");
@@ -129,6 +127,9 @@ namespace Out_Of_Office.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<DateOnly>("EndDate")
                         .HasColumnType("date");
 
@@ -141,6 +142,8 @@ namespace Out_Of_Office.Server.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AbsenceReasonId");
+
+                    b.HasIndex("EmployeeId");
 
                     b.ToTable("LeaveRequests");
                 });
@@ -217,19 +220,11 @@ namespace Out_Of_Office.Server.Migrations
 
             modelBuilder.Entity("Out_Of_Office.Server.Entities.ApprovalRequest", b =>
                 {
-                    b.HasOne("Out_Of_Office.Server.Entities.Employee", "Approver")
-                        .WithMany()
-                        .HasForeignKey("ApproverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Out_Of_Office.Server.Entities.LeaveRequest", "LeaveRequest")
                         .WithMany()
                         .HasForeignKey("LeaveRequestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Approver");
 
                     b.Navigation("LeaveRequest");
                 });
@@ -253,7 +248,15 @@ namespace Out_Of_Office.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Out_Of_Office.Server.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("AbsenceReason");
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("Out_Of_Office.Server.Entities.Project", b =>

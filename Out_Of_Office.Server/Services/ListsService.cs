@@ -13,6 +13,7 @@ namespace Out_Of_Office.Server.Services
     {
         public List<EmployeeDTO> GetHRManagerEmployees();
         public EmployeeDTO UpdateHRManagerEmployeeList(EmployeeDTO employeeDTO);
+        public List<LeaveRequestDTO> GetHRManagerLeaveRequests();
         public List<CombinedValueDTO> GetSubdivisionOptions();
         public List<CombinedValueDTO> GetPeoplePartnerOptions();
         public List<CombinedValueDTO> GetPositionOptions();
@@ -29,7 +30,7 @@ namespace Out_Of_Office.Server.Services
             List<EmployeeDTO> employeeesDTOs = [];
 
             //var authenticatedUserId = _userContextService.GetUserId();
-            var authenticatedUserId = 4;
+            var authenticatedUserId = 2;
 
             var employees = _dataContext.Employees
                 .Where(emp => emp.PeoplePartnerId == authenticatedUserId)
@@ -108,6 +109,30 @@ namespace Out_Of_Office.Server.Services
 
             return employeeDTO;
         }
+
+       public List<LeaveRequestDTO> GetHRManagerLeaveRequests()
+       {
+            //var authenticatedUserId = _userContextService.GetUserId();
+            var authenticatedUserId = 2;
+
+            var leaveRequestsDTOs = _dataContext.LeaveRequests
+                .Include(i => i.Employee)
+                .Include(i=> i.AbsenceReason)
+                .Where(lr => lr.Employee != null && lr.Employee.PeoplePartnerId == authenticatedUserId)
+                .Select(elr => new LeaveRequestDTO() 
+                {
+                    Id = elr.Id,
+                    Employee = elr.Employee!.FullName,
+                    StartDate = elr.StartDate.ToString(),
+                    EndDate = elr.EndDate.ToString(),
+                    AbsenceReason = elr.AbsenceReason!.Value,
+                    Status = elr.Status.ToString(),
+                    Comment = elr.Comment,
+
+                }).ToList();
+
+            return leaveRequestsDTOs;
+       }
 
         public List<CombinedValueDTO> GetSubdivisionOptions()
         {

@@ -25,7 +25,7 @@ h2{
 }
 
 h3{
-    font-size: ${theme.fontSizes.h2} ;
+    font-size: ${theme.fontSizes.h3} ;
 }
 
 a{

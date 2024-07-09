@@ -12,9 +12,17 @@ namespace Out_Of_Office.Server.Controllers
         private readonly IListService _listService = listService;
 
         [HttpGet("employeesHR")]
-        public ActionResult GetHRManagerEmployees()
+        public ActionResult<EmployeeDTO[]> GetHRManagerEmployees()
         {
             var result = _listService.GetHRManagerEmployees();
+
+            return Ok(result);
+        }
+
+        [HttpGet("leaveRequestsHR")]
+        public ActionResult<List<LeaveRequestDTO>> GetHRManagerLeaveRequests()
+        {
+            var result = _listService.GetHRManagerLeaveRequests();
 
             return Ok(result);
         }

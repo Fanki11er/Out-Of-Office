@@ -6,7 +6,6 @@ namespace Out_Of_Office.Server.Entities
     {
         public required int Id { get; set; }
         public required int ApproverId { get; set; }
-        public virtual Employee? Approver {  get; set; }
         public required int LeaveRequestId { get; set; }
         public virtual LeaveRequest? LeaveRequest { get; set; }
         public required ERequestStatus Status { get; set; }

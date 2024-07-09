@@ -54,6 +54,21 @@ namespace Out_Of_Office.Server.Data
 
                     _dataContext.SaveChanges();
                 }
+
+                if (!_dataContext.LeaveRequests.Any())
+                {
+                    var employee = _dataContext.Employees.FirstOrDefault(e => e.Position == Enums.EPositions.Employee);
+                    if (employee is null)
+                    {
+                        return;
+                    }
+
+                    var leaveRequests = CreateLeaveRequests(employee.Id);
+
+                    _dataContext.AddRange(leaveRequests);
+
+                    _dataContext.SaveChanges();
+                }
             }
         }
 
@@ -179,7 +194,7 @@ namespace Out_Of_Office.Server.Data
                     OutOfOfficeBalance = 26
                 },
                  new()
-                {
+                 {
                     Login =  "Employee2",
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("12345678"),
                     FullName = "Patryk Gruszka",
@@ -188,10 +203,27 @@ namespace Out_Of_Office.Server.Data
                     SubdivisionId = 2,
                     PeoplePartnerId = 2,
                     OutOfOfficeBalance = 20
-                }
+                 }
             };
 
             return employees;
+        }
+
+        private static List<LeaveRequest> CreateLeaveRequests(int employeeId)
+        {
+            var leaveRequests = new List<LeaveRequest>()
+            {
+                new()
+                {
+                    EmployeeId = employeeId,
+                    StartDate = DateOnly.FromDateTime(DateTime.Now).AddDays(5),
+                    EndDate = DateOnly.FromDateTime(DateTime.Now).AddDays(15),
+                    AbsenceReasonId = 2,
+                    Comment = "Planned vacation"
+                }
+            };
+
+            return leaveRequests;
         }
     }
 }

@@ -18,30 +18,32 @@ import TableLoader from "../TableLoader/TableLoader";
 import TableError from "../TableError/TableError";
 import TableWithFiltersAndSorting from "../TableWithFiltersAndSorting/TableWithFiltersAndSorting";
 import DetailsCell from "../DetailsCell/DetailsCell";
-import useModal from "../../../hooks/useModal";
 import { createPortal } from "react-dom";
 import Modal from "../Modal/Modal";
+import LeaveRequestDetails from "../LeaveRequestDetails/LeaveRequestDetails";
+import { hrManagerLeaveRequestsListEndpoint } from "../../../api/apiEndpoints";
 
-const mockedData: LeaveRequestDTO[] = [
-  {
-    id: 1,
-    employee: "Krzysztof Dziedzic",
-    absenceReason: "Urlop",
-    startDate: "24.10.2024",
-    endDate: "30.10.2024",
-    status: "New",
-    comment: "",
-  },
-  {
-    id: 2,
-    employee: "Krzysztof Markowski",
-    absenceReason: "Urlop",
-    startDate: "24.11.2024",
-    endDate: "25.10.2024",
-    status: "Submitted",
-    comment: "",
-  },
-];
+// const mockedData: LeaveRequestDTO[] = [
+//   {
+//     id: 1,
+//     employee: "Krzysztof Dziedzic",
+//     absenceReason: "Urlop",
+//     startDate: "24.10.2024",
+//     endDate: "30.10.2024",
+//     status: "New",
+//     comment: "",
+//   },
+//   {
+//     id: 2,
+//     employee: "Krzysztof Markowski",
+//     absenceReason: "Urlop",
+//     startDate: "24.11.2024",
+//     endDate: "25.10.2024",
+//     status: "Submitted",
+//     comment:
+//       "Lorem ipsum svcve hqbdqbdbew bedywbeiwbw debqbdewiqbfw dbqbqibfbqfbew dbehqbdqbfq bdeqibfq",
+//   },
+// ];
 
 const columnHelper = createColumnHelper<LeaveRequestDTO>();
 
@@ -109,26 +111,36 @@ const columns = [
 
 const HRManagerLeaveRequestsList = () => {
   const axiosPrivate = useAxiosPrivate();
-  const [data, setData] = useState<LeaveRequestDTO[]>(mockedData);
+  const [data, setData] = useState<LeaveRequestDTO[]>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [selectedRow, setSelectedRow] = useState(-1);
-  //const { isModalOpen, handleOpenModal, handleCloseModal } = useModal();
-  console.log(selectedRow);
+  const [selectedRowId, setSelectedRowId] = useState(-1);
   const handleSelectRow = (rowIndex: number) => {
-    setSelectedRow(rowIndex);
+    setSelectedRowId(rowIndex);
   };
 
   const handleDeselectRow = () => {
-    setSelectedRow(-1);
+    setSelectedRowId(-1);
+  };
+
+  const getSelectedRow = (rowId: number) => {
+    if (data.length < rowId) {
+      return null;
+    }
+
+    const selectedRow = data[rowId];
+
+    return selectedRow;
   };
 
   const modal = createPortal(
-    <Modal handleCloseModal={handleDeselectRow} />,
+    <Modal handleCloseModal={handleDeselectRow}>
+      {<LeaveRequestDetails leaveRequest={getSelectedRow(selectedRowId)} />}
+    </Modal>,
     document.body
   );
 
   const getLeaveRequestsListHR = async () => {
-    const response = await axiosPrivate.get("");
+    const response = await axiosPrivate.get(hrManagerLeaveRequestsListEndpoint);
     return response.data;
   };
 
@@ -142,9 +154,9 @@ const HRManagerLeaveRequestsList = () => {
     queryFn: getLeaveRequestsListHR,
   });
 
-  //   useEffect(() => {
-  //     queryData && setData(queryData);
-  //   }, [queryData]);
+  useEffect(() => {
+    queryData && setData(queryData);
+  }, [queryData]);
 
   const table = useReactTable({
     columns: columns,
@@ -168,13 +180,12 @@ const HRManagerLeaveRequestsList = () => {
 
   return (
     <StyledHRManagerLeaveRequestsListWrapper>
-      {/* {isLoading && <TableLoader />}
+      {isLoading && <TableLoader />}
       {isError && <TableError errorMessage={error.message} />}
       {!isLoading && !error && (
         <TableWithFiltersAndSorting table={table} dataLength={data.length} />
-      )} */}
-      <TableWithFiltersAndSorting table={table} dataLength={data.length} />
-      {selectedRow >= 0 && modal}
+      )}
+      {selectedRowId >= 0 && modal}
     </StyledHRManagerLeaveRequestsListWrapper>
   );
 };
