@@ -25,9 +25,9 @@ export type LeaveRequestDTO = {
   comment: string;
 };
 
-export type ApproveRequestDTO = {
+export type ApprovalRequestDTO = {
   id: number;
-  approver: string;
+  approver?: string;
   leaveRequest: number;
   status: string;
   comment: string;
@@ -40,7 +40,12 @@ export type ErrorData = {
   status: number;
 };
 
-export type ApproveRequestStatus = "New" | "Accept" | "Reject";
+export type ApprovalRequestStatus = "New" | "Accepted" | "Rejected";
+
+type SelectOption = {
+  value: ApprovalRequestStatus;
+  displayValue: string;
+};
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

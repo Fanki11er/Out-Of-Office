@@ -12,7 +12,7 @@ using Out_Of_Office.Server.Data;
 namespace Out_Of_Office.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240709182713_initial")]
+    [Migration("20240710183322_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -50,11 +50,10 @@ namespace Out_Of_Office.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ApproverId")
+                    b.Property<int?>("ApproverId")
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("LeaveRequestId")

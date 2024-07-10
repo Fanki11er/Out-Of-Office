@@ -3,5 +3,5 @@ export const routerPaths = {
   lists: "/Lists",
   employeeList: "Employee",
   leaveRequestsList: "LeaveRequest",
-  approveRequestsList: "ApproveRequest",
+  approvalRequestsList: "ApprovalRequest",
 };

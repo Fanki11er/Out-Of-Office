@@ -69,6 +69,25 @@ namespace Out_Of_Office.Server.Data
 
                     _dataContext.SaveChanges();
                 }
+
+                if (!_dataContext.ApprovalRequests.Any())
+                {
+                    var leaveRequest = _dataContext.LeaveRequests.FirstOrDefault();
+                    if (leaveRequest is null)
+                    {
+                        return;
+                    }
+
+                    var approval = CreateApprovalRequests(leaveRequest);
+
+                    _dataContext.AddRange(approval);
+
+                    leaveRequest.Status = Enums.ERequestStatus.Submited;
+
+                    _dataContext.Update(leaveRequest);
+
+                    _dataContext.SaveChanges();
+                }
             }
         }
 
@@ -224,6 +243,20 @@ namespace Out_Of_Office.Server.Data
             };
 
             return leaveRequests;
+        }
+
+        public static List<ApprovalRequest> CreateApprovalRequests(LeaveRequest leaveRequest)
+        {
+            var approvalRequests = new List<ApprovalRequest>()
+            {
+                new()
+                {
+                    Status = Enums.ERequestStatus.New,
+                    LeaveRequestId = leaveRequest.Id,
+                }
+            };
+
+            return approvalRequests;
         }
     }
 }

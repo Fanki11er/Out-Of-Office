@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Out_Of_Office.Server.Data;
 using Out_Of_Office.Server.Entities;
@@ -6,6 +7,7 @@ using Out_Of_Office.Server.Enums;
 using Out_Of_Office.Server.Exceptions;
 using Out_Of_Office.Server.Models;
 using Out_Of_Office.Server.Utilities;
+using System.Linq.Expressions;
 
 namespace Out_Of_Office.Server.Services
 {
@@ -14,6 +16,8 @@ namespace Out_Of_Office.Server.Services
         public List<EmployeeDTO> GetHRManagerEmployees();
         public EmployeeDTO UpdateHRManagerEmployeeList(EmployeeDTO employeeDTO);
         public List<LeaveRequestDTO> GetHRManagerLeaveRequests();
+        public List<ApprovalRequestDTO> GetHRManagerApprovalRequests();
+        public void ChangeApprovalRequestStatus(ChangeApprovalRequestStatusDTO newStatusDTO);
         public List<CombinedValueDTO> GetSubdivisionOptions();
         public List<CombinedValueDTO> GetPeoplePartnerOptions();
         public List<CombinedValueDTO> GetPositionOptions();
@@ -134,6 +138,44 @@ namespace Out_Of_Office.Server.Services
             return leaveRequestsDTOs;
        }
 
+        public List<ApprovalRequestDTO> GetHRManagerApprovalRequests()
+        {
+            //var authenticatedUserId = _userContextService.GetUserId();
+
+            var authenticatedUserId = 2;
+
+            var approvalRequests = _dataContext.ApprovalRequests
+                .Include(i => i.LeaveRequest)
+                .ThenInclude(e => e!.Employee!)
+                .Where(ar => ar.LeaveRequest!.Employee!.PeoplePartnerId == authenticatedUserId);
+
+            var approvalRequestsDtos = approvalRequests.Select(ar => new ApprovalRequestDTO()
+            {
+                Id = ar.Id,
+                Status = ar.Status.ToString(),
+                Comment = ar.Comment,
+                LeaveRequest = ar.LeaveRequestId
+            }).ToList();
+
+            return approvalRequestsDtos;
+        }
+
+        public void ChangeApprovalRequestStatus(ChangeApprovalRequestStatusDTO newStatusDTO)
+        {
+            //var authenticatedUserId = _userContextService.GetUserId();
+
+            var authenticatedUserId = 2;
+
+            if (newStatusDTO.NewStatus == ERequestStatus.Accepted.ToString())
+            {
+                ApproveRequest(newStatusDTO.RequestId, authenticatedUserId);
+            }
+            else
+            {
+                RejectRequest(newStatusDTO.RequestId, newStatusDTO.Comment);
+            }
+        }
+
         public List<CombinedValueDTO> GetSubdivisionOptions()
         {
             List<CombinedValueDTO> combinedValueDTOs = [];
@@ -197,6 +239,47 @@ namespace Out_Of_Office.Server.Services
                    Value = t.ToString()
                }).ToList();
             return combinedValueDTOs;
+        }
+
+        private void ApproveRequest(int requestId, int approverId)
+        {
+            var approvalRequest = _dataContext.ApprovalRequests.
+                Include(i => i.LeaveRequest).
+                ThenInclude(e => e!.Employee)
+                .FirstOrDefault(ar => ar.Id == requestId) ?? 
+                throw new BadHttpRequestException("Request not found");
+
+            var leaveDays = approvalRequest.LeaveRequest!.EndDate.DayNumber - approvalRequest.LeaveRequest.StartDate.DayNumber;
+
+            if (approvalRequest.LeaveRequest.Employee!.OutOfOfficeBalance < leaveDays)
+            {
+                throw new BadHttpRequestException("Not enough days in out of office balance ");
+            }
+
+            approvalRequest.Status = ERequestStatus.Accepted;
+            approvalRequest.ApproverId = approverId;
+            approvalRequest.LeaveRequest.Status = ERequestStatus.Accepted;
+            approvalRequest.LeaveRequest.Employee.OutOfOfficeBalance -= leaveDays;
+
+            _dataContext.Update(approvalRequest);
+
+            DatabaseUtilities.SaveChangesToDatabase(_dataContext);
+        }
+
+        private void RejectRequest(int requestId, string? comment) 
+        {
+            var approvalRequest = _dataContext.ApprovalRequests.
+               Include(i => i.LeaveRequest)
+               .FirstOrDefault(ar => ar.Id == requestId) ??
+               throw new BadHttpRequestException("Request not found");
+
+            approvalRequest.Status = ERequestStatus.Rejected;
+            approvalRequest.LeaveRequest!.Status = ERequestStatus.Rejected;
+            approvalRequest.Comment = comment?? "";
+
+            _dataContext.Update(approvalRequest);
+
+            DatabaseUtilities.SaveChangesToDatabase(_dataContext);
         }
     }
 }

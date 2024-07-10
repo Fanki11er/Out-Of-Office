@@ -1,47 +1,95 @@
-import { Formik } from "formik";
-import { StyledDefaultForm } from "../../atoms/StyledDefaultForm/StyledDefaultForm.styles";
+import { Formik, FormikHelpers } from "formik";
 import {
-  ApproveRequestDTO,
-  ApproveRequestStatus,
+  ApprovalRequestDTO,
+  ApprovalRequestStatus,
+  SelectOption,
 } from "../../../types/outOffOffice";
-import { StyledDefaultSelect } from "../../atoms/StyledDefaultSelect/StyledDefaultSelect.styles";
-import { StyledDefaultInputLabel } from "../../atoms/StyledDefaultInputLabel/StyledDefaultInputLabel.styles";
 import { StyledDefaultButton } from "../../atoms/StyledDefaultButton/StyledDefaultButton.styles";
 import { StyledFormLoadingIndicator } from "../../atoms/StyledDefaultLoadingIndicator/StyledFormLoadingIndicator.styles";
 import { StyledFormError } from "../../atoms/StyledFormError/StyledFormError.styles";
 import { getErrorMessages } from "../../../Utilities/utilities";
 import { StyledSuccessStatus } from "../RegisterEmployeeForm/RegisterEmployeeForm.styles";
+import TextareaField from "../../molecules/TextAreaField/TextAreaField";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { hrManagerApproveRequestsListEndpoint } from "../../../api/apiEndpoints";
+import { APPROVAL_REQUESTS_HR_KEY } from "../../../api/QueryKeys";
+import { StyledHRManagerApprovalForm } from "../../molecules/HRManagerApprovalRequestsList/HRManagerApprovalRequestsList.styles";
+import RequestStatusSelectInput from "../../molecules/RequestStatusSelectInput/RequestStatusSelectInput";
 
-type ChangeApproveRequestStatusDTO = {
-  requestId: number;
-  newStatus: ApproveRequestStatus;
-  comment?: string;
+type ChangeApprovalRequestStatusDTO = {
+  RequestId: number;
+  NewStatus: ApprovalRequestStatus;
+  Comment?: string;
 };
+
+const options: SelectOption[] = [
+  {
+    value: "Accepted",
+    displayValue: "Accept",
+  },
+  {
+    value: "Rejected",
+    displayValue: "Reject",
+  },
+];
 
 const STATUS_FIELD_NAME = "status";
 const COMMENT_FIELD_NAME = "comment";
 
-interface ApproveRequestFormValues {
-  [STATUS_FIELD_NAME]: ApproveRequestStatus;
+interface ApprovalRequestFormValues {
+  [STATUS_FIELD_NAME]: ApprovalRequestStatus;
   [COMMENT_FIELD_NAME]: string;
 }
 
 type Props = {
-  approveRequest: ApproveRequestDTO;
+  approveRequest: ApprovalRequestDTO;
 };
 const ApproveRequestForm = ({ approveRequest }: Props) => {
-  const initialValues: ApproveRequestFormValues = {
+  const initialValues: ApprovalRequestFormValues = {
     [STATUS_FIELD_NAME]: "New",
     [COMMENT_FIELD_NAME]: "",
   };
 
+  const axiosPrivate = useAxiosPrivate();
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending, isError, error, isSuccess } = useMutation({
+    mutationFn: (values: ChangeApprovalRequestStatusDTO) => {
+      return axiosPrivate.put(hrManagerApproveRequestsListEndpoint, values, {
+        withCredentials: true,
+      });
+    },
+  });
+
   return (
     <Formik
       initialValues={initialValues}
-      onSubmit={() => console.log("Submit")}
+      onSubmit={(
+        values: ApprovalRequestFormValues,
+        { setSubmitting, resetForm }: FormikHelpers<ApprovalRequestFormValues>
+      ) => {
+        const registerEmployeeDTO: ChangeApprovalRequestStatusDTO = {
+          RequestId: approveRequest.id,
+          NewStatus: values[STATUS_FIELD_NAME],
+          Comment: values[COMMENT_FIELD_NAME],
+        };
+
+        mutate(registerEmployeeDTO, {
+          onSuccess: () => {
+            queryClient.invalidateQueries({
+              refetchType: "all",
+              predicate: (query) =>
+                query.queryKey[0] === APPROVAL_REQUESTS_HR_KEY,
+            });
+            resetForm();
+          },
+        });
+        setSubmitting(false);
+      }}
     >
       {({ values }) => (
-        <StyledDefaultForm>
+        <StyledHRManagerApprovalForm>
           {isError && !isPending && (
             <StyledFormError>{getErrorMessages(error)}</StyledFormError>
           )}
@@ -54,17 +102,29 @@ const ApproveRequestForm = ({ approveRequest }: Props) => {
             <b>Leave request: </b>
             {approveRequest.leaveRequest}
           </span>
-          <StyledDefaultInputLabel>
-            Select status
-            <StyledDefaultSelect name={STATUS_FIELD_NAME}>
-              <option hidden defaultChecked value={"New"}>
-                {"New"}
-              </option>
-              <option value={"Accept"}>Accept</option>
-              <option value={"Reject"}>Reject</option>
-            </StyledDefaultSelect>
-          </StyledDefaultInputLabel>
-          {values[STATUS_FIELD_NAME] === "Reject" && <div>Comment Field</div>}
+          <RequestStatusSelectInput
+            name={STATUS_FIELD_NAME}
+            label={"Select new status"}
+          >
+            <option hidden defaultChecked value={"New"}>
+              {"New"}
+            </option>
+            {options.map((option) => {
+              return (
+                <option key={option.value} value={option.value}>
+                  {option.displayValue}
+                </option>
+              );
+            })}
+          </RequestStatusSelectInput>
+
+          {values[STATUS_FIELD_NAME] === "Rejected" && (
+            <TextareaField
+              label={"Comment"}
+              name={COMMENT_FIELD_NAME}
+              placeholder={"Rejection reason..."}
+            />
+          )}
 
           {isPending && !isError ? (
             <StyledFormLoadingIndicator>Submitting</StyledFormLoadingIndicator>
@@ -73,7 +133,7 @@ const ApproveRequestForm = ({ approveRequest }: Props) => {
               <StyledDefaultButton type="submit">Submit</StyledDefaultButton>
             )
           )}
-        </StyledDefaultForm>
+        </StyledHRManagerApprovalForm>
       )}
     </Formik>
   );

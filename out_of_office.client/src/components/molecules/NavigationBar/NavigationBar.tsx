@@ -11,7 +11,7 @@ const NavigationBar = () => {
       <StyledNavigationLink to={routerPaths.leaveRequestsList}>
         Leave Requests
       </StyledNavigationLink>
-      <StyledNavigationLink to={routerPaths.approveRequestsList}>
+      <StyledNavigationLink to={routerPaths.approvalRequestsList}>
         Approval Requests
       </StyledNavigationLink>
       <StyledNavigationLink to={"/Projects"}>Projects</StyledNavigationLink>

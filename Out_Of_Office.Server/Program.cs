@@ -66,6 +66,7 @@ builder.Services.AddCors(p => p.AddPolicy("CORS", builder =>
 builder.Services.AddScoped<IValidator<RegisterEmployeeDTO>, RegisterEmployeeDTOValidator>();
 builder.Services.AddScoped<IValidator<LoginEmployeeDTO>, LoginEmployeeDTOValidator>();
 builder.Services.AddScoped<IValidator<EmployeeDTO>, EmployeeDTOValidator>();
+builder.Services.AddScoped<IValidator<ChangeApprovalRequestStatusDTO>, ChangeApprovalRequestStatusDTOValidator>();
 
 
 // Add MiddleWare

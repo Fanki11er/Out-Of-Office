@@ -8,7 +8,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ApproveRequestDTO } from "../../../types/outOffOffice";
+import { ApprovalRequestDTO } from "../../../types/outOffOffice";
 import DetailsCell from "../DetailsCell/DetailsCell";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import { useEffect, useState } from "react";
@@ -16,7 +16,7 @@ import { createPortal } from "react-dom";
 import Modal from "../Modal/Modal";
 import { hrManagerApproveRequestsListEndpoint } from "../../../api/apiEndpoints";
 import { useQuery } from "@tanstack/react-query";
-import { APPROVE_REQUESTS_HR_KEY } from "../../../api/QueryKeys";
+import { APPROVAL_REQUESTS_HR_KEY } from "../../../api/QueryKeys";
 import { StyledDefaultListContainer } from "../../atoms/StyledDefaultListContainer/StyledDefaultListContainer.styles";
 import TableLoader from "../TableLoader/TableLoader";
 import TableError from "../TableError/TableError";
@@ -24,7 +24,7 @@ import TableWithFiltersAndSorting from "../TableWithFiltersAndSorting/TableWithF
 import ApproveRequestDetails from "../ApproveRequestDetails/ApproveRequestDetails";
 import ApproveRequestForm from "../../organisms/ApproveRequestForm/ApproveRequestForm";
 
-const columnHelper = createColumnHelper<ApproveRequestDTO>();
+const columnHelper = createColumnHelper<ApprovalRequestDTO>();
 
 const columns = [
   columnHelper.accessor("id", {
@@ -71,9 +71,9 @@ const columns = [
   }),
 ];
 
-const HRManagerApproveRequestsList = () => {
+const HRManagerApprovalRequestsList = () => {
   const axiosPrivate = useAxiosPrivate();
-  const [data, setData] = useState<ApproveRequestDTO[]>([]);
+  const [data, setData] = useState<ApprovalRequestDTO[]>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [selectedRowId, setSelectedRowId] = useState(-1);
 
@@ -99,7 +99,7 @@ const HRManagerApproveRequestsList = () => {
     const row = getSelectedRow(selectedRowId);
     const modal = createPortal(
       <Modal handleCloseModal={handleDeselectRow}>
-        {row?.status === "new" ? (
+        {row?.status === "New" ? (
           <ApproveRequestForm approveRequest={row} />
         ) : (
           <ApproveRequestDetails approveRequest={row} />
@@ -110,7 +110,7 @@ const HRManagerApproveRequestsList = () => {
     return modal;
   };
 
-  const getLeaveRequestsListHR = async () => {
+  const getApprovalRequestsListHR = async () => {
     const response = await axiosPrivate.get(
       hrManagerApproveRequestsListEndpoint
     );
@@ -122,9 +122,9 @@ const HRManagerApproveRequestsList = () => {
     isLoading,
     isError,
     error,
-  } = useQuery<ApproveRequestDTO[]>({
-    queryKey: [APPROVE_REQUESTS_HR_KEY],
-    queryFn: getLeaveRequestsListHR,
+  } = useQuery<ApprovalRequestDTO[]>({
+    queryKey: [APPROVAL_REQUESTS_HR_KEY],
+    queryFn: getApprovalRequestsListHR,
   });
 
   useEffect(() => {
@@ -163,4 +163,4 @@ const HRManagerApproveRequestsList = () => {
   );
 };
 
-export default HRManagerApproveRequestsList;
+export default HRManagerApprovalRequestsList;

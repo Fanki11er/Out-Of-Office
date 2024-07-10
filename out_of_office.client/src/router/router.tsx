@@ -5,8 +5,8 @@ import RequireAuth from "../components/molecules/RequireAuth/RequireAuth";
 import ListsView from "../views/ListsView/ListsView";
 import EmployeesList from "../components/organisms/EmployeesList/EmployeesList";
 import LeaveRequestsList from "../components/organisms/LeaveRequestsList/LeaveRequestsList";
-import ApproveRequestsList from "../components/organisms/ApproveRequestsList/ApproveRequestsList";
-const { root, lists, employeeList, leaveRequestsList, approveRequestsList } =
+import ApprovalRequestsList from "../components/organisms/ApprovalRequestsList/ApprovalRequestsList";
+const { root, lists, employeeList, leaveRequestsList, approvalRequestsList } =
   routerPaths;
 
 const AppRouter = () => {
@@ -19,8 +19,8 @@ const AppRouter = () => {
             <Route path={employeeList} element={<EmployeesList />} />
             <Route path={leaveRequestsList} element={<LeaveRequestsList />} />
             <Route
-              path={approveRequestsList}
-              element={<ApproveRequestsList />}
+              path={approvalRequestsList}
+              element={<ApprovalRequestsList />}
             />
           </Route>
         </Route>
