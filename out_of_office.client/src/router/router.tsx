@@ -6,8 +6,15 @@ import ListsView from "../views/ListsView/ListsView";
 import EmployeesList from "../components/organisms/EmployeesList/EmployeesList";
 import LeaveRequestsList from "../components/organisms/LeaveRequestsList/LeaveRequestsList";
 import ApprovalRequestsList from "../components/organisms/ApprovalRequestsList/ApprovalRequestsList";
-const { root, lists, employeeList, leaveRequestsList, approvalRequestsList } =
-  routerPaths;
+import ProjectsList from "../components/organisms/ProjectsList/ProjectsList";
+const {
+  root,
+  lists,
+  employeeList,
+  leaveRequestsList,
+  approvalRequestsList,
+  projectsList,
+} = routerPaths;
 
 const AppRouter = () => {
   return (
@@ -22,6 +29,7 @@ const AppRouter = () => {
               path={approvalRequestsList}
               element={<ApprovalRequestsList />}
             />
+            <Route path={projectsList} element={<ProjectsList />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to={root} />} />

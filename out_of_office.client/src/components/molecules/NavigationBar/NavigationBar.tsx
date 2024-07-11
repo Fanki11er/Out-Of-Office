@@ -14,7 +14,9 @@ const NavigationBar = () => {
       <StyledNavigationLink to={routerPaths.approvalRequestsList}>
         Approval Requests
       </StyledNavigationLink>
-      <StyledNavigationLink to={"/Projects"}>Projects</StyledNavigationLink>
+      <StyledNavigationLink to={routerPaths.projectsList}>
+        Projects
+      </StyledNavigationLink>
     </StyledNavigationBar>
   );
 };

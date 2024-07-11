@@ -88,6 +88,21 @@ namespace Out_Of_Office.Server.Data
 
                     _dataContext.SaveChanges();
                 }
+
+                if (!_dataContext.Projects.Any())
+                {
+                    var employee = _dataContext.Employees.FirstOrDefault(e => e.Position == Enums.EPositions.Project_Manager);
+                    if (employee is null)
+                    {
+                        return;
+                    }
+
+                    var projects = CreateProjects(employee.Id);
+
+                    _dataContext.AddRange(projects);
+
+                    _dataContext.SaveChanges();
+                }
             }
         }
 
@@ -201,6 +216,17 @@ namespace Out_Of_Office.Server.Data
                     OutOfOfficeBalance = 26,
                     PeoplePartnerId = 1,       
                 },
+                 new()
+                {
+                    Login =  "ProjectManager1",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("12345678"),
+                    FullName = "Krzysztof Przekątny",
+                    Status = Enums.EStatus.Active,
+                    Position = Enums.EPositions.Project_Manager,
+                    SubdivisionId = 1,
+                    OutOfOfficeBalance = 26,
+                    PeoplePartnerId = 2,
+                },
                 new()
                 {
                     Login =  "Employee1",
@@ -221,7 +247,9 @@ namespace Out_Of_Office.Server.Data
                     Position = Enums.EPositions.Employee,
                     SubdivisionId = 2,
                     PeoplePartnerId = 2,
-                    OutOfOfficeBalance = 20
+                    OutOfOfficeBalance = 20,
+                    ProjectId = 1,
+                   
                  }
             };
 
@@ -253,6 +281,23 @@ namespace Out_Of_Office.Server.Data
                 {
                     Status = Enums.ERequestStatus.New,
                     LeaveRequestId = leaveRequest.Id,
+                }
+            };
+
+            return approvalRequests;
+        }
+
+        public static List<Project> CreateProjects(int projectManagerId)
+        {
+            var approvalRequests = new List<Project>()
+            {
+                new()
+                {
+                    ProjectManagerId = projectManagerId,
+                    StartDate = DateOnly.FromDateTime(DateTime.Now).AddDays(5),
+                    Status = Enums.EStatus.Active,
+                    ProjectTypeId = 1,
+                    Comment = "Tests project"
                 }
             };
 

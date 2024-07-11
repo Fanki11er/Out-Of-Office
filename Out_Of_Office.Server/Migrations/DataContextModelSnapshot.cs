@@ -98,6 +98,9 @@ namespace Out_Of_Office.Server.Migrations
                     b.Property<int>("Position")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -175,8 +178,6 @@ namespace Out_Of_Office.Server.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProjectManagerId");
 
                     b.HasIndex("ProjectTypeId");
 
@@ -260,19 +261,11 @@ namespace Out_Of_Office.Server.Migrations
 
             modelBuilder.Entity("Out_Of_Office.Server.Entities.Project", b =>
                 {
-                    b.HasOne("Out_Of_Office.Server.Entities.Employee", "ProjectManager")
-                        .WithMany()
-                        .HasForeignKey("ProjectManagerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Out_Of_Office.Server.Entities.ProjectType", "ProjectType")
                         .WithMany()
                         .HasForeignKey("ProjectTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ProjectManager");
 
                     b.Navigation("ProjectType");
                 });

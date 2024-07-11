@@ -15,5 +15,6 @@ namespace Out_Of_Office.Server.Entities
         public required int OutOfOfficeBalance { get; set; }
         public string? ImagePath { get; set; }  
         public  int? PeoplePartnerId { get; set; }
+        public int? ProjectId { get; set; }
     }
 }

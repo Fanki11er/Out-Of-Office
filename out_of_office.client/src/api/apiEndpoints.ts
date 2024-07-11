@@ -10,6 +10,10 @@ export const hrManagerLeaveRequestsListEndpoint = "/lists/leaveRequestsHR";
 
 export const hrManagerApproveRequestsListEndpoint = "/lists/approvalRequestsHR";
 
+export const hrManagerProjectsListEndpoint = "/lists/projectsHR";
+
+export const employeeProjectsListEndpoint = "/lists/projectsEmployee";
+
 export const getOptionsFromApi = (optionType: string) => {
   return `/lists/${optionType}`;
 };

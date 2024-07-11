@@ -33,6 +33,16 @@ export type ApprovalRequestDTO = {
   comment: string;
 };
 
+export type ProjectDTO = {
+  id: number;
+  projectType: string;
+  startDate: string;
+  endDate: string;
+  projectManager: string;
+  status: string;
+  comment: string;
+};
+
 export type ErrorData = {
   errors: {
     [key: string]: string[];

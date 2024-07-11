@@ -35,6 +35,22 @@ namespace Out_Of_Office.Server.Controllers
             return Ok(result);
         }
 
+        [HttpGet("projectsHR")]
+        public ActionResult<List<ProjectDTO>> GetHRManagerProjects()
+        {
+            var result = _listService.GetHRManagerProjects();
+
+            return Ok(result);
+        }
+
+        [HttpGet("projectsEmployee")]
+        public ActionResult<List<ProjectDTO>> GetEmployeeProjects()
+        {
+            var result = _listService.GetEmployeeProjects();
+
+            return Ok(result);
+        }
+
         [HttpPut("approvalRequestsHR")]
         public ActionResult ChangeApproveRequestStatus([FromBody] ChangeApprovalRequestStatusDTO newStatusDTO)
         {

@@ -41,7 +41,11 @@ const AuthProvider = (props: PropsWithChildren) => {
   const values = useMemo(
     () => ({
       login,
-      user: storedValue,
+      user: {
+        fullName: "TEST TEST",
+        position: "Employee",
+        token: "TOKEN",
+      } as AuthenticatedUser,
       logout,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -4,4 +4,5 @@ export const routerPaths = {
   employeeList: "Employee",
   leaveRequestsList: "LeaveRequest",
   approvalRequestsList: "ApprovalRequest",
+  projectsList: "Project",
 };

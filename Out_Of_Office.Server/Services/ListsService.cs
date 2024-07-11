@@ -17,6 +17,8 @@ namespace Out_Of_Office.Server.Services
         public EmployeeDTO UpdateHRManagerEmployeeList(EmployeeDTO employeeDTO);
         public List<LeaveRequestDTO> GetHRManagerLeaveRequests();
         public List<ApprovalRequestDTO> GetHRManagerApprovalRequests();
+        public List<ProjectDTO> GetHRManagerProjects();
+        public List<ProjectDTO> GetEmployeeProjects();
         public void ChangeApprovalRequestStatus(ChangeApprovalRequestStatusDTO newStatusDTO);
         public List<CombinedValueDTO> GetSubdivisionOptions();
         public List<CombinedValueDTO> GetPeoplePartnerOptions();
@@ -82,6 +84,22 @@ namespace Out_Of_Office.Server.Services
                         throw new BadHttpRequestException("Can't change position from HR Manager if there are connected employees");
                     }
                 }   
+            }
+
+            if (employeeForUpdate.Position == EPositions.Project_Manager)
+            {
+                var newPosition = (EPositions)employeeDTO.Position.Id;
+
+                if (newPosition != EPositions.HR_Director)
+                {
+                    var hasProjects = _dataContext.Projects
+                        .Any(p => p.ProjectManagerId == employeeForUpdate.Id);
+
+                    if (hasProjects)
+                    {
+                        throw new BadHttpRequestException("Can't change position from Project Manager if there are connected projects");
+                    }
+                }
             }
 
             if (employeeForUpdate.Position == EPositions.Project_Manager)
@@ -158,6 +176,63 @@ namespace Out_Of_Office.Server.Services
             }).ToList();
 
             return approvalRequestsDtos;
+        }
+
+        public List<ProjectDTO> GetHRManagerProjects()
+        {
+            //var authenticatedUserId = _userContextService.GetUserId();
+
+            var authenticatedUserId = 2;
+
+            var projectsIds =  _dataContext.Employees.Where(e => e.PeoplePartnerId == authenticatedUserId && e.ProjectId != 0)
+                .Select(e => e.ProjectId)
+                .Distinct()
+                .ToList();
+
+            var projects = _dataContext.Projects
+                .Include(pt => pt.ProjectType)
+                .Where(p => projectsIds
+                .Contains(p.Id));
+
+            var projectsDTOs = projects.Select(p => new ProjectDTO()
+            {
+                Id= p.Id,
+                ProjectType = p.ProjectType!.Value,
+                ProjectManager = _dataContext.Employees.First(e => e.Id == p.ProjectManagerId).FullName,
+                StartDate = p.StartDate.ToString(),
+                EndDate = p.EndDate.ToString()?? "",
+                Status = p.Status.ToString(),
+                Comment= p.Comment,
+            }).ToList();
+
+            return projectsDTOs;
+        }
+
+        public List<ProjectDTO> GetEmployeeProjects()
+        {
+            //var authenticatedUserId = _userContextService.GetUserId();
+
+            var authenticatedUserId = 5;
+
+            var employee = _dataContext.Employees
+                .FirstOrDefault(e => e.Id == authenticatedUserId) ??
+                throw new BadHttpRequestException("Employee not found");
+
+            var projectsDtos = _dataContext.Projects
+                .Include(i => i.ProjectType)
+                .Where(p => p.Id == employee.ProjectId)
+                .Select(p => new ProjectDTO()
+                {
+                  Id = p.Id,
+                  ProjectType = p.ProjectType!.Value,
+                  ProjectManager = _dataContext.Employees.First(e => e.Id == p.ProjectManagerId).FullName,
+                  StartDate = p.StartDate.ToString(),
+                  EndDate = p.EndDate.ToString() ?? "",
+                  Status = p.Status.ToString(),
+                  Comment = p.Comment,
+                }).ToList();
+
+            return projectsDtos;
         }
 
         public void ChangeApprovalRequestStatus(ChangeApprovalRequestStatusDTO newStatusDTO)
