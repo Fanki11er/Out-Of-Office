@@ -17,6 +17,7 @@ namespace Out_Of_Office.Server.Services
         public EmployeeDTO UpdateHRManagerEmployeeList(EmployeeDTO employeeDTO);
         public List<LeaveRequestDTO> GetHRManagerLeaveRequests();
         public List<ApprovalRequestDTO> GetHRManagerApprovalRequests();
+        public List<ApprovalRequestDTO> GetEmployeeApprovalRequests();
         public List<ProjectDTO> GetHRManagerProjects();
         public List<ProjectDTO> GetEmployeeProjects();
         public void ChangeApprovalRequestStatus(ChangeApprovalRequestStatusDTO newStatusDTO);
@@ -176,6 +177,26 @@ namespace Out_Of_Office.Server.Services
             }).ToList();
 
             return approvalRequestsDtos;
+        }
+
+        public List<ApprovalRequestDTO> GetEmployeeApprovalRequests()
+        {
+            //var authenticatedUserId = _userContextService.GetUserId();
+
+            var authenticatedUserId = 5;
+
+            var approvalRequestsDTOs = _dataContext.ApprovalRequests
+                .Include(i => i.LeaveRequest)
+                .Where(ar => ar.LeaveRequest!.EmployeeId == authenticatedUserId)
+                .Select(ar => new ApprovalRequestDTO()
+                {
+                    Id = ar.Id,
+                    Status = ar.Status.ToString(),
+                    Comment = ar.Comment,
+                    LeaveRequest = ar.LeaveRequestId
+                }).ToList();
+
+            return approvalRequestsDTOs;
         }
 
         public List<ProjectDTO> GetHRManagerProjects()

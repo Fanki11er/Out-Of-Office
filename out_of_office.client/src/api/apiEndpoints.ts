@@ -8,7 +8,11 @@ export const hrManagerEmployeesListEndpoint = "/lists/employeesHR";
 
 export const hrManagerLeaveRequestsListEndpoint = "/lists/leaveRequestsHR";
 
-export const hrManagerApproveRequestsListEndpoint = "/lists/approvalRequestsHR";
+export const managersApproveRequestsListEndpoint =
+  "/lists/approvalRequestsManagers";
+
+export const employeeApproveRequestsListEndpoint =
+  "/lists/approvalRequestsEmployee";
 
 export const hrManagerProjectsListEndpoint = "/lists/projectsHR";
 

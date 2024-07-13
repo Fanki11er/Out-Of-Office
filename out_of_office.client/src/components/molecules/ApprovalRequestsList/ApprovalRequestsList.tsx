@@ -14,15 +14,14 @@ import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Modal from "../Modal/Modal";
-import { hrManagerApproveRequestsListEndpoint } from "../../../api/apiEndpoints";
 import { useQuery } from "@tanstack/react-query";
-import { APPROVAL_REQUESTS_HR_KEY } from "../../../api/QueryKeys";
 import { StyledDefaultListContainer } from "../../atoms/StyledDefaultListContainer/StyledDefaultListContainer.styles";
 import TableLoader from "../TableLoader/TableLoader";
 import TableError from "../TableError/TableError";
 import TableWithFiltersAndSorting from "../TableWithFiltersAndSorting/TableWithFiltersAndSorting";
 import ApproveRequestDetails from "../ApproveRequestDetails/ApproveRequestDetails";
 import ApproveRequestForm from "../../organisms/ApproveRequestForm/ApproveRequestForm";
+import useAuth from "../../../hooks/useAuth";
 
 const columnHelper = createColumnHelper<ApprovalRequestDTO>();
 
@@ -71,7 +70,13 @@ const columns = [
   }),
 ];
 
-const HRManagerApprovalRequestsList = () => {
+type Props = {
+  getDataApiPath: string;
+  queryKey: string;
+};
+
+const ApprovalRequestsList = ({ getDataApiPath, queryKey }: Props) => {
+  const { user } = useAuth();
   const axiosPrivate = useAxiosPrivate();
   const [data, setData] = useState<ApprovalRequestDTO[]>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -99,7 +104,9 @@ const HRManagerApprovalRequestsList = () => {
     const row = getSelectedRow(selectedRowId);
     const modal = createPortal(
       <Modal handleCloseModal={handleDeselectRow}>
-        {row?.status === "New" ? (
+        {row?.status === "New" &&
+        (user?.position === "HR_Manager" ||
+          user?.position === "Project_Manager") ? (
           <ApproveRequestForm approveRequest={row} />
         ) : (
           <ApproveRequestDetails approveRequest={row} />
@@ -111,9 +118,7 @@ const HRManagerApprovalRequestsList = () => {
   };
 
   const getApprovalRequestsListHR = async () => {
-    const response = await axiosPrivate.get(
-      hrManagerApproveRequestsListEndpoint
-    );
+    const response = await axiosPrivate.get(getDataApiPath);
     return response.data;
   };
 
@@ -123,7 +128,7 @@ const HRManagerApprovalRequestsList = () => {
     isError,
     error,
   } = useQuery<ApprovalRequestDTO[]>({
-    queryKey: [APPROVAL_REQUESTS_HR_KEY],
+    queryKey: [queryKey],
     queryFn: getApprovalRequestsListHR,
   });
 
@@ -163,4 +168,4 @@ const HRManagerApprovalRequestsList = () => {
   );
 };
 
-export default HRManagerApprovalRequestsList;
+export default ApprovalRequestsList;

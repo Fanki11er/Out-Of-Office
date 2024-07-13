@@ -12,9 +12,9 @@ import { StyledSuccessStatus } from "../RegisterEmployeeForm/RegisterEmployeeFor
 import TextareaField from "../../molecules/TextAreaField/TextAreaField";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import { hrManagerApproveRequestsListEndpoint } from "../../../api/apiEndpoints";
+import { managersApproveRequestsListEndpoint } from "../../../api/apiEndpoints";
 import { APPROVAL_REQUESTS_HR_KEY } from "../../../api/QueryKeys";
-import { StyledHRManagerApprovalForm } from "../../molecules/HRManagerApprovalRequestsList/HRManagerApprovalRequestsList.styles";
+import { StyledHRManagerApprovalForm } from "../../molecules/ApprovalRequestsList/ApprovalRequestsList.styles";
 import RequestStatusSelectInput from "../../molecules/RequestStatusSelectInput/RequestStatusSelectInput";
 
 type ChangeApprovalRequestStatusDTO = {
@@ -56,7 +56,7 @@ const ApproveRequestForm = ({ approveRequest }: Props) => {
 
   const { mutate, isPending, isError, error, isSuccess } = useMutation({
     mutationFn: (values: ChangeApprovalRequestStatusDTO) => {
-      return axiosPrivate.put(hrManagerApproveRequestsListEndpoint, values, {
+      return axiosPrivate.put(managersApproveRequestsListEndpoint, values, {
         withCredentials: true,
       });
     },

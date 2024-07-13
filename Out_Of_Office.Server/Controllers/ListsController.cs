@@ -27,10 +27,18 @@ namespace Out_Of_Office.Server.Controllers
             return Ok(result);
         }
 
-        [HttpGet("approvalRequestsHR")]
+        [HttpGet("approvalRequestsManagers")]
         public ActionResult<List<ApprovalRequestDTO>> GetHRManagerApprovalRequests()
         {
             var result = _listService.GetHRManagerApprovalRequests();
+
+            return Ok(result);
+        }
+
+        [HttpGet("approvalRequestsEmployee")]
+        public ActionResult<List<ApprovalRequestDTO>> GetEmployeeApprovalRequests()
+        {
+            var result = _listService.GetEmployeeApprovalRequests();
 
             return Ok(result);
         }
@@ -51,7 +59,7 @@ namespace Out_Of_Office.Server.Controllers
             return Ok(result);
         }
 
-        [HttpPut("approvalRequestsHR")]
+        [HttpPut("approvalRequestsManagers")]
         public ActionResult ChangeApproveRequestStatus([FromBody] ChangeApprovalRequestStatusDTO newStatusDTO)
         {
             _listService.ChangeApprovalRequestStatus(newStatusDTO);
