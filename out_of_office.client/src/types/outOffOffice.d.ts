@@ -18,7 +18,7 @@ export type EmployeeDTO = {
 export type LeaveRequestDTO = {
   id: number;
   employee: string;
-  absenceReason: string;
+  absenceReason: CombinedValue;
   startDate: string;
   endDate: string;
   status: string;

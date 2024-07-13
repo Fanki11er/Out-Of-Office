@@ -20,6 +20,10 @@ const LeaveRequestDetails = ({ leaveRequest }: Props) => {
         {leaveRequest.employee}
       </span>
       <span>
+        <b>Absence reason: </b>
+        {leaveRequest.absenceReason.value}
+      </span>
+      <span>
         <b>Start date: </b>
         {leaveRequest.startDate}
       </span>

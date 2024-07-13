@@ -12,7 +12,7 @@ import {
   APPROVAL_REQUESTS_HR_KEY,
 } from "../../../api/QueryKeys";
 
-const ApprovALRequestsList = () => {
+const ApprovalRequestsLists = () => {
   const { user } = useAuth();
 
   const renderListDependingOnPosition = () => {
@@ -46,4 +46,4 @@ const ApprovALRequestsList = () => {
   );
 };
 
-export default ApprovALRequestsList;
+export default ApprovalRequestsLists;

@@ -12,7 +12,6 @@ import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import { LeaveRequestDTO } from "../../../types/outOffOffice";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { LEAVE_REQUESTS_HR_KEY } from "../../../api/QueryKeys";
 import TableLoader from "../TableLoader/TableLoader";
 import TableError from "../TableError/TableError";
 import TableWithFiltersAndSorting from "../TableWithFiltersAndSorting/TableWithFiltersAndSorting";
@@ -20,8 +19,8 @@ import DetailsCell from "../DetailsCell/DetailsCell";
 import { createPortal } from "react-dom";
 import Modal from "../Modal/Modal";
 import LeaveRequestDetails from "../LeaveRequestDetails/LeaveRequestDetails";
-import { hrManagerLeaveRequestsListEndpoint } from "../../../api/apiEndpoints";
 import { StyledDefaultListContainer } from "../../atoms/StyledDefaultListContainer/StyledDefaultListContainer.styles";
+import { filterCombinedValue } from "../../../Utilities/utilities";
 
 const columnHelper = createColumnHelper<LeaveRequestDTO>();
 
@@ -47,8 +46,9 @@ const columns = [
     size: 180,
     cell: (info) => info.getValue(),
     meta: {
-      filterVariant: "standardSelect",
+      filterVariant: "combinedSelect",
     },
+    filterFn: filterCombinedValue,
   }),
   columnHelper.accessor("startDate", {
     header: "Start date",
@@ -66,7 +66,6 @@ const columns = [
       filterVariant: "standardSelect",
     },
   }),
-
   columnHelper.accessor("status", {
     header: "Status",
     size: 200,
@@ -86,8 +85,12 @@ const columns = [
     size: 100,
   }),
 ];
+type Props = {
+  getDataApiPath: string;
+  queryKey: string;
+};
 
-const HRManagerLeaveRequestsList = () => {
+const LeaveRequestsList = ({ getDataApiPath, queryKey }: Props) => {
   const axiosPrivate = useAxiosPrivate();
   const [data, setData] = useState<LeaveRequestDTO[]>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -118,7 +121,7 @@ const HRManagerLeaveRequestsList = () => {
   );
 
   const getLeaveRequestsListHR = async () => {
-    const response = await axiosPrivate.get(hrManagerLeaveRequestsListEndpoint);
+    const response = await axiosPrivate.get(getDataApiPath);
     return response.data;
   };
 
@@ -128,7 +131,7 @@ const HRManagerLeaveRequestsList = () => {
     isError,
     error,
   } = useQuery<LeaveRequestDTO[]>({
-    queryKey: [LEAVE_REQUESTS_HR_KEY],
+    queryKey: [queryKey],
     queryFn: getLeaveRequestsListHR,
   });
 
@@ -168,4 +171,4 @@ const HRManagerLeaveRequestsList = () => {
   );
 };
 
-export default HRManagerLeaveRequestsList;
+export default LeaveRequestsList;

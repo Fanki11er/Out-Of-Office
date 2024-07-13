@@ -1,16 +1,16 @@
 import { Row } from "@tanstack/react-table";
-import { CombinedValue, EmployeeDTO, ErrorData } from "../types/outOffOffice";
+import { CombinedValue, ErrorData } from "../types/outOffOffice";
 import { AxiosError } from "axios";
 
-export const filterCombinedValue = (
-  row: Row<EmployeeDTO>,
+export function filterCombinedValue<T>(
+  row: Row<T>,
   columnId: string,
   filterValue: string
-) => {
+) {
   const cellValue = row.getValue(columnId) as CombinedValue;
 
   return cellValue.id.toString() === filterValue;
-};
+}
 
 export const getErrorMessages = (e: unknown) => {
   const errorMessages: string[] = [];
