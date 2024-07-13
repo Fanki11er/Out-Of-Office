@@ -13,11 +13,6 @@ export const StyledDateFormFieldWrapper = styled.div`
   width: 150px;
 `;
 
-export const StyledDateFormFieldLabel = styled.label`
-  color: ${(props) => props.theme.colors.orange};
-  font-weight: bold;
-`;
-
 export const StyledIndicatorImage = styled.img`
   position: absolute;
   grid-row: 2/3;
@@ -32,7 +27,7 @@ export const StyledDateField = styled(Field)<ErrorProps>`
   width: fit-content;
   height: 40px;
   border-radius: 10px;
-  background-image: ${({ theme }) => theme.colors.lightOrange};
+  background-color: ${({ theme }) => theme.colors.lightOrange};
   padding: 5px 10px;
   border: 2px solid
     ${(props) => (props.$iserror ? props.theme.colors.red : "transparent")};

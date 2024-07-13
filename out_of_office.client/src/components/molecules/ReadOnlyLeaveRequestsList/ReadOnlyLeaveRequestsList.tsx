@@ -90,7 +90,7 @@ type Props = {
   queryKey: string;
 };
 
-const LeaveRequestsList = ({ getDataApiPath, queryKey }: Props) => {
+const ReadOnlyLeaveRequestsList = ({ getDataApiPath, queryKey }: Props) => {
   const axiosPrivate = useAxiosPrivate();
   const [data, setData] = useState<LeaveRequestDTO[]>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -171,4 +171,4 @@ const LeaveRequestsList = ({ getDataApiPath, queryKey }: Props) => {
   );
 };
 
-export default LeaveRequestsList;
+export default ReadOnlyLeaveRequestsList;

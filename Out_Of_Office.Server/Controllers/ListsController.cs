@@ -27,6 +27,14 @@ namespace Out_Of_Office.Server.Controllers
             return Ok(result);
         }
 
+        [HttpGet("leaveRequestsEmployee")]
+        public ActionResult<List<LeaveRequestDTO>> GetEmployeeLeaveRequests()
+        {
+            var result = _listService.GetEmployeeLeaveRequests();
+
+            return Ok(result);
+        }
+
         [HttpGet("approvalRequestsManagers")]
         public ActionResult<List<ApprovalRequestDTO>> GetHRManagerApprovalRequests()
         {
@@ -104,6 +112,14 @@ namespace Out_Of_Office.Server.Controllers
         public ActionResult<List<CombinedValueDTO>> GetStatusOptions()
         {
             var result = _listService.GetStatusOptions();
+
+            return Ok(result);
+        }
+
+        [HttpGet("absenceReasons")]
+        public ActionResult<List<CombinedValueDTO>> GetAbsenceReasonOptions()
+        {
+            var result = _listService.GetAbsenceReasonOptions();
 
             return Ok(result);
         }

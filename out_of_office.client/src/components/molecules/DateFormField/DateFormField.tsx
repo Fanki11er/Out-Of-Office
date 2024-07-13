@@ -1,7 +1,6 @@
 import { ErrorMessage } from "formik";
 import {
   StyledDateField,
-  StyledDateFormFieldLabel,
   StyledDateFormFieldWrapper,
   StyledIndicatorImage,
 } from "./DateFormField.styles";
@@ -17,7 +16,7 @@ const DateFormField = (props: Props) => {
   const { label, name, isError } = props;
   return (
     <StyledDateFormFieldWrapper>
-      <StyledDateFormFieldLabel>{label}</StyledDateFormFieldLabel>
+      <label>{label}</label>
       <StyledDateField type={"date"} name={name} $iserror={!!isError} />
       <ErrorMessage
         name={name}

@@ -8,6 +8,7 @@ using Out_Of_Office.Server.Exceptions;
 using Out_Of_Office.Server.Models;
 using Out_Of_Office.Server.Utilities;
 using System.Linq.Expressions;
+using System.Security.Cryptography.Xml;
 
 namespace Out_Of_Office.Server.Services
 {
@@ -18,6 +19,7 @@ namespace Out_Of_Office.Server.Services
         public List<LeaveRequestDTO> GetHRManagerLeaveRequests();
         public List<ApprovalRequestDTO> GetHRManagerApprovalRequests();
         public List<ApprovalRequestDTO> GetEmployeeApprovalRequests();
+        public List<LeaveRequestDTO> GetEmployeeLeaveRequests();
         public List<ProjectDTO> GetHRManagerProjects();
         public List<ProjectDTO> GetEmployeeProjects();
         public void ChangeApprovalRequestStatus(ChangeApprovalRequestStatusDTO newStatusDTO);
@@ -25,6 +27,7 @@ namespace Out_Of_Office.Server.Services
         public List<CombinedValueDTO> GetPeoplePartnerOptions();
         public List<CombinedValueDTO> GetPositionOptions();
         public List<CombinedValueDTO> GetStatusOptions();
+        public List<CombinedValueDTO> GetAbsenceReasonOptions();
     };
     public class ListsService(DataContext dataContext, IUserContextService userContextService): IListService
     {
@@ -148,7 +151,11 @@ namespace Out_Of_Office.Server.Services
                     Employee = elr.Employee!.FullName,
                     StartDate = elr.StartDate.ToString(),
                     EndDate = elr.EndDate.ToString(),
-                    AbsenceReason = elr.AbsenceReason!.Value,
+                    AbsenceReason = new CombinedValueDTO()
+                    { 
+                        Id = elr.AbsenceReason!.Id, 
+                        Value = elr.AbsenceReason!.Value, 
+                    },
                     Status = elr.Status.ToString(),
                     Comment = elr.Comment,
 
@@ -156,6 +163,33 @@ namespace Out_Of_Office.Server.Services
 
             return leaveRequestsDTOs;
        }
+
+        public List<LeaveRequestDTO> GetEmployeeLeaveRequests()
+        {
+            //var authenticatedUserId = _userContextService.GetUserId();
+            var authenticatedUserId = 4;
+
+            var leaveRequestsDTOs = _dataContext.LeaveRequests
+                .Include(i => i.AbsenceReason)
+                .Include (i=> i.Employee)
+                .Where(lr => lr.EmployeeId == authenticatedUserId)
+                .Select(elr => new LeaveRequestDTO()
+                {
+                    Id = elr.Id,
+                    Employee = elr.Employee!.FullName,
+                    StartDate = elr.StartDate.ToString(),
+                    EndDate = elr.EndDate.ToString(),
+                    AbsenceReason = new CombinedValueDTO()
+                    {
+                        Id = elr.AbsenceReason!.Id,
+                        Value = elr.AbsenceReason!.Value,
+                    },
+                    Status = elr.Status.ToString(),
+                    Comment = elr.Comment
+                }).ToList();
+
+            return leaveRequestsDTOs;
+        }
 
         public List<ApprovalRequestDTO> GetHRManagerApprovalRequests()
         {
@@ -337,6 +371,18 @@ namespace Out_Of_Office.Server.Services
             return combinedValueDTOs;
         }
 
+        public List<CombinedValueDTO> GetAbsenceReasonOptions()
+        {
+
+            var absenceReasonsDTOs = _dataContext.AbsenceReasons.Select(ar => new CombinedValueDTO()
+            {
+                Id = ar.Id,
+                Value = ar.Value,
+            }).ToList();
+
+            return absenceReasonsDTOs ;
+
+        }
         private void ApproveRequest(int requestId, int approverId)
         {
             var approvalRequest = _dataContext.ApprovalRequests.

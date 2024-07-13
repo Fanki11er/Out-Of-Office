@@ -43,19 +43,24 @@ type LeaveRequestFormValues = {
 
 type Props = {
   formType: "Edit" | "New";
-  leaveRequest?: LeaveRequestDTO;
+  leaveRequest?: LeaveRequestDTO | null;
+  handleCloseModal?: () => void;
 };
 
-export const leaveRequestSchema = Yup.object().shape({
+const leaveRequestSchema = Yup.object().shape({
   [ABSENCE_REASON_FIELD_NAME]: Yup.number().min(0, "Field is required"),
-  [START_DATE_FIELD_NAME]: Yup.date().min(new Date()),
+  [START_DATE_FIELD_NAME]: Yup.date().min(new Date(), "Wrong date"),
   [END_DATE_FIELD_NAME]: Yup.date().when(
     [START_DATE_FIELD_NAME],
-    (startDate, schema) => startDate && schema.min(startDate)
+    (startDate, schema) => startDate && schema.min(startDate, "Wrong date")
   ),
 });
 
-const LeaveRequestForm = ({ formType, leaveRequest }: Props) => {
+const LeaveRequestForm = ({
+  formType,
+  leaveRequest,
+  handleCloseModal,
+}: Props) => {
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient();
 
@@ -138,6 +143,7 @@ const LeaveRequestForm = ({ formType, leaveRequest }: Props) => {
           },
         });
         setSubmitting(false);
+        handleCloseModal && handleCloseModal();
       }}
     >
       {({ errors }) => (
@@ -156,7 +162,6 @@ const LeaveRequestForm = ({ formType, leaveRequest }: Props) => {
             label={"Select absence reason"}
           >
             <option
-              hidden
               defaultChecked
               value={leaveRequest ? leaveRequest.absenceReason.id : ""}
             >
@@ -165,7 +170,9 @@ const LeaveRequestForm = ({ formType, leaveRequest }: Props) => {
             {data &&
               data
                 .filter((option) => {
-                  return option.id !== leaveRequest?.absenceReason.id;
+                  return (
+                    option.id !== leaveRequest?.absenceReason.id && option.id
+                  );
                 })
                 .map((option) => {
                   return (

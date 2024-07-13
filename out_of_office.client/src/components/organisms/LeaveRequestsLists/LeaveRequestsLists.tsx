@@ -2,15 +2,12 @@ import { Navigate } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 import { StyledDefaultListWrapper } from "../../atoms/StyledDefaultListWrapper/StyledDefaultListWrapper.styles";
 import {
-  employeeApproveRequestsListEndpoint,
   hrManagerLeaveRequestsListEndpoint,
   loginEndpoint,
 } from "../../../api/apiEndpoints";
-import LeaveRequestsList from "../../molecules/LeaveRequestsList/LeaveRequestsList";
-import {
-  LEAVE_REQUESTS_EMPLOYEE_KEY,
-  LEAVE_REQUESTS_HR_KEY,
-} from "../../../api/QueryKeys";
+import ReadOnlyLeaveRequestsList from "../../molecules/ReadOnlyLeaveRequestsList/ReadOnlyLeaveRequestsList";
+import { LEAVE_REQUESTS_HR_KEY } from "../../../api/QueryKeys";
+import EditableLeaveRequestsList from "../../molecules/EditableLeaveRequestsList/EditableLeaveRequestsList";
 
 const LeaveRequestsLists = () => {
   const { user } = useAuth();
@@ -19,7 +16,7 @@ const LeaveRequestsLists = () => {
     switch (user?.position) {
       case "HR_Manager": {
         return (
-          <LeaveRequestsList
+          <ReadOnlyLeaveRequestsList
             queryKey={LEAVE_REQUESTS_HR_KEY}
             getDataApiPath={hrManagerLeaveRequestsListEndpoint}
           />
@@ -27,12 +24,7 @@ const LeaveRequestsLists = () => {
       }
 
       case "Employee": {
-        return (
-          <LeaveRequestsList
-            queryKey={LEAVE_REQUESTS_EMPLOYEE_KEY}
-            getDataApiPath={employeeApproveRequestsListEndpoint}
-          />
-        );
+        return <EditableLeaveRequestsList />;
       }
 
       default: {
