@@ -177,8 +177,11 @@ const EditableLeaveRequestsList = () => {
     return changeStatusModal;
   };
 
-  const getLeaveRequestsListEmployee = async () => {
-    const response = await axiosPrivate.get(employeeLeaveRequestsListEndpoint);
+  //@ts-expect-error Signal is not typed properly
+  const getLeaveRequestsListEmployee = async ({ signal }) => {
+    const response = await axiosPrivate.get(employeeLeaveRequestsListEndpoint, {
+      signal,
+    });
     return response.data;
   };
 
@@ -189,7 +192,7 @@ const EditableLeaveRequestsList = () => {
     error,
   } = useQuery<LeaveRequestDTO[]>({
     queryKey: [LEAVE_REQUESTS_EMPLOYEE_KEY],
-    queryFn: getLeaveRequestsListEmployee,
+    queryFn: (props) => getLeaveRequestsListEmployee(props),
   });
 
   useEffect(() => {

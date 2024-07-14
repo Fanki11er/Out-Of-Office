@@ -8,13 +8,14 @@ import {
 import ReadOnlyLeaveRequestsList from "../../molecules/ReadOnlyLeaveRequestsList/ReadOnlyLeaveRequestsList";
 import { LEAVE_REQUESTS_HR_KEY } from "../../../api/QueryKeys";
 import EditableLeaveRequestsList from "../../molecules/EditableLeaveRequestsList/EditableLeaveRequestsList";
+import { EMPLOYEE_ROLE, HR_MANAGER_ROLE } from "../../../Constants/constants";
 
 const LeaveRequestsLists = () => {
   const { user } = useAuth();
 
   const renderList = () => {
     switch (user?.position) {
-      case "HR_Manager": {
+      case HR_MANAGER_ROLE: {
         return (
           <ReadOnlyLeaveRequestsList
             queryKey={LEAVE_REQUESTS_HR_KEY}
@@ -23,7 +24,7 @@ const LeaveRequestsLists = () => {
         );
       }
 
-      case "Employee": {
+      case EMPLOYEE_ROLE: {
         return <EditableLeaveRequestsList />;
       }
 

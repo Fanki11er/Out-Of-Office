@@ -22,6 +22,10 @@ import TableWithFiltersAndSorting from "../TableWithFiltersAndSorting/TableWithF
 import ApproveRequestDetails from "../ApproveRequestDetails/ApproveRequestDetails";
 import ApproveRequestForm from "../../organisms/ApproveRequestForm/ApproveRequestForm";
 import useAuth from "../../../hooks/useAuth";
+import {
+  HR_MANAGER_ROLE,
+  PROJECT_MANAGER_ROLE,
+} from "../../../Constants/constants";
 
 const columnHelper = createColumnHelper<ApprovalRequestDTO>();
 
@@ -105,8 +109,8 @@ const ApprovalRequestsList = ({ getDataApiPath, queryKey }: Props) => {
     const modal = createPortal(
       <Modal handleCloseModal={handleDeselectRow}>
         {row?.status === "New" &&
-        (user?.position === "HR_Manager" ||
-          user?.position === "Project_Manager") ? (
+        (user?.position === HR_MANAGER_ROLE ||
+          user?.position === PROJECT_MANAGER_ROLE) ? (
           <ApproveRequestForm approveRequest={row} />
         ) : (
           <ApproveRequestDetails approveRequest={row} />
@@ -117,8 +121,9 @@ const ApprovalRequestsList = ({ getDataApiPath, queryKey }: Props) => {
     return modal;
   };
 
-  const getApprovalRequestsListHR = async () => {
-    const response = await axiosPrivate.get(getDataApiPath);
+  //@ts-expect-error Signal is not typed properly
+  const getApprovalRequestsListHR = async ({ signal }) => {
+    const response = await axiosPrivate.get(getDataApiPath, { signal });
     return response.data;
   };
 
@@ -129,7 +134,7 @@ const ApprovalRequestsList = ({ getDataApiPath, queryKey }: Props) => {
     error,
   } = useQuery<ApprovalRequestDTO[]>({
     queryKey: [queryKey],
-    queryFn: getApprovalRequestsListHR,
+    queryFn: (props) => getApprovalRequestsListHR(props),
   });
 
   useEffect(() => {

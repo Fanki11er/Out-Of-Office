@@ -119,9 +119,9 @@ const ReadOnlyLeaveRequestsList = ({ getDataApiPath, queryKey }: Props) => {
     </Modal>,
     document.body
   );
-
-  const getLeaveRequestsListHR = async () => {
-    const response = await axiosPrivate.get(getDataApiPath);
+  //@ts-expect-error Signal is not typed properly
+  const getLeaveRequestsListHR = async ({ signal }) => {
+    const response = await axiosPrivate.get(getDataApiPath, { signal });
     return response.data;
   };
 
@@ -132,7 +132,7 @@ const ReadOnlyLeaveRequestsList = ({ getDataApiPath, queryKey }: Props) => {
     error,
   } = useQuery<LeaveRequestDTO[]>({
     queryKey: [queryKey],
-    queryFn: getLeaveRequestsListHR,
+    queryFn: (props) => getLeaveRequestsListHR(props),
   });
 
   useEffect(() => {

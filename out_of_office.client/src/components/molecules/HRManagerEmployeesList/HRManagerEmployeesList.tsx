@@ -109,8 +109,11 @@ const HRManagerEmployeesList = () => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const axiosPrivate = useAxiosPrivate();
 
-  const getEmployeesHR = async () => {
-    const response = await axiosPrivate.get(hrManagerEmployeesListEndpoint);
+  //@ts-expect-error Signal is not typed properly
+  const getEmployeesHR = async ({ signal }) => {
+    const response = await axiosPrivate.get(hrManagerEmployeesListEndpoint, {
+      signal: signal,
+    });
     return response.data;
   };
 
@@ -121,7 +124,7 @@ const HRManagerEmployeesList = () => {
     error,
   } = useQuery<EmployeeDTO[]>({
     queryKey: [EMPLOYEES_HR_KEY],
-    queryFn: getEmployeesHR,
+    queryFn: (props) => getEmployeesHR(props),
   });
 
   useEffect(() => {

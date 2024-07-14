@@ -121,8 +121,9 @@ const ReadOnlyProjectsList = ({ getDataApiPath, queryKey }: Props) => {
     document.body
   );
 
-  const getProjectsList = async () => {
-    const response = await axiosPrivate.get(getDataApiPath);
+  //@ts-expect-error Signal is not typed properly
+  const getProjectsList = async ({ signal }) => {
+    const response = await axiosPrivate.get(getDataApiPath, { signal });
     return response.data;
   };
 
@@ -133,7 +134,7 @@ const ReadOnlyProjectsList = ({ getDataApiPath, queryKey }: Props) => {
     error,
   } = useQuery<ProjectDTO[]>({
     queryKey: [queryKey],
-    queryFn: getProjectsList,
+    queryFn: (props) => getProjectsList(props),
   });
 
   useEffect(() => {

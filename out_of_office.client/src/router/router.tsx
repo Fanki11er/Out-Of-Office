@@ -7,14 +7,8 @@ import EmployeesList from "../components/organisms/EmployeesList/EmployeesList";
 import LeaveRequestsLists from "../components/organisms/LeaveRequestsLists/LeaveRequestsLists";
 import ApprovalRequestsLists from "../components/organisms/ApprovalRequestsLists/ApprovalRequestsLists";
 import ProjectsList from "../components/organisms/ProjectsList/ProjectsList";
-const {
-  root,
-  lists,
-  employeeList,
-  leaveRequestsList,
-  approvalRequestsList,
-  projectsList,
-} = routerPaths;
+const { root, lists, employeeList, approvalRequestsList, projectsList } =
+  routerPaths;
 
 const AppRouter = () => {
   return (
@@ -25,7 +19,7 @@ const AppRouter = () => {
           <Route path={lists} element={<ListsView />}>
             <Route
               index
-              path={leaveRequestsList}
+              //path={leaveRequestsList}
               element={<LeaveRequestsLists />}
             />
             <Route

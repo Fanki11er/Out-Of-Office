@@ -11,13 +11,14 @@ import {
 import useAuth from "../../../hooks/useAuth";
 import { StyledDefaultListWrapper } from "../../atoms/StyledDefaultListWrapper/StyledDefaultListWrapper.styles";
 import ReadOnlyProjectsList from "../../molecules/ReadOnlyProjectsList/ReadOnlyProjectsList";
+import { EMPLOYEE_ROLE, HR_MANAGER_ROLE } from "../../../Constants/constants";
 
 const ProjectsList = () => {
   const { user } = useAuth();
 
   const renderListsDependOnPosition = () => {
     switch (user?.position) {
-      case "HR_Manager": {
+      case HR_MANAGER_ROLE: {
         return (
           <ReadOnlyProjectsList
             getDataApiPath={hrManagerProjectsListEndpoint}
@@ -25,7 +26,7 @@ const ProjectsList = () => {
           />
         );
       }
-      case "Employee": {
+      case EMPLOYEE_ROLE: {
         return (
           <ReadOnlyProjectsList
             getDataApiPath={employeeProjectsListEndpoint}

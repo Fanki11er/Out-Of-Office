@@ -11,7 +11,7 @@ export const StyledNavigationLink = styled(NavLink)`
   overflow: hidden;
 
   &:hover,
-  .active {
+  &.active {
     color: ${({ theme }) => theme.colors.orange};
     &::after {
       transform: translateY(0);

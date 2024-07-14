@@ -15,15 +15,17 @@ const SelectCell = ({
   const cellValue = getValue();
 
   const optionsType = column.columnDef.meta?.optionsType || "";
-
-  const getOptions = async () => {
-    const response = await axiosPrivate.get(getOptionsFromApi(optionsType));
+  //@ts-expect-error Signal is not typed properly
+  const getOptions = async ({ signal }) => {
+    const response = await axiosPrivate.get(getOptionsFromApi(optionsType), {
+      signal,
+    });
     return response.data;
   };
 
   const { data } = useQuery<CombinedValue[]>({
     queryKey: [optionsType],
-    queryFn: getOptions,
+    queryFn: (props) => getOptions(props),
     staleTime: 60000,
   });
 
