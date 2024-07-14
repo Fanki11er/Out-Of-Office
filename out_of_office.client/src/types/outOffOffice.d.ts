@@ -52,8 +52,10 @@ export type ErrorData = {
 
 export type ApprovalRequestStatus = "New" | "Accepted" | "Rejected";
 
-type SelectOption = {
-  value: ApprovalRequestStatus;
+export type LeaveRequestSubmissionStatus = "New" | "Submitted" | "Cancelled";
+
+type SelectOption<T> = {
+  value: T;
   displayValue: string;
 };
 

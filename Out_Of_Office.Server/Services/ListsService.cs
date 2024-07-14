@@ -22,6 +22,7 @@ namespace Out_Of_Office.Server.Services
         public List<LeaveRequestDTO> GetEmployeeLeaveRequests();
         public void CreateNewEmployeeLeaveRequest(NewLeaveRequestDTO newLeaveRequestDTO);
         public void EditEmployeeLeaveRequest(EditLeaveRequestDTO editLeaveRequestDTO);
+        public void ChangeLeaveRequestStatus(ChangeLeaveRequestStatusDTO newStatusDTO);
         public List<ProjectDTO> GetHRManagerProjects();
         public List<ProjectDTO> GetEmployeeProjects();
         public void ChangeApprovalRequestStatus(ChangeApprovalRequestStatusDTO newStatusDTO);
@@ -31,7 +32,7 @@ namespace Out_Of_Office.Server.Services
         public List<CombinedValueDTO> GetStatusOptions();
         public List<CombinedValueDTO> GetAbsenceReasonOptions();
     };
-    public class ListsService(DataContext dataContext, IUserContextService userContextService): IListService
+    public class ListsService(DataContext dataContext, IUserContextService userContextService) : IListService
     {
         private readonly DataContext _dataContext = dataContext;
 
@@ -51,7 +52,7 @@ namespace Out_Of_Office.Server.Services
 
             var peoplePartner = _dataContext.Employees
                 .FirstOrDefault(e => e.Id == authenticatedUserId);
-            
+
             foreach (var employee in employees)
             {
                 var dto = Utilities.Utilities.CreateEmployeeDTO(employee, peoplePartner);
@@ -65,8 +66,8 @@ namespace Out_Of_Office.Server.Services
         public EmployeeDTO UpdateHRManagerEmployeeList(EmployeeDTO employeeDTO)
         {
 
-            var employeeForUpdate =  _dataContext.Employees
-                .FirstOrDefault(e => e.Id == employeeDTO.Id) ?? 
+            var employeeForUpdate = _dataContext.Employees
+                .FirstOrDefault(e => e.Id == employeeDTO.Id) ??
                 throw new BadHttpRequestException("Employee for update entry not found");
 
             if (employeeForUpdate.Position != EPositions.HR_Manager &&
@@ -80,7 +81,7 @@ namespace Out_Of_Office.Server.Services
             {
                 var newPosition = (EPositions)employeeDTO.Position.Id;
 
-                if(newPosition != EPositions.HR_Director)
+                if (newPosition != EPositions.HR_Director)
                 {
                     var hasEmployees = _dataContext.Employees
                         .Any(e => e.PeoplePartnerId == employeeForUpdate.Id);
@@ -89,7 +90,7 @@ namespace Out_Of_Office.Server.Services
                     {
                         throw new BadHttpRequestException("Can't change position from HR Manager if there are connected employees");
                     }
-                }   
+                }
             }
 
             if (employeeForUpdate.Position == EPositions.Project_Manager)
@@ -138,25 +139,25 @@ namespace Out_Of_Office.Server.Services
             return employeeDTO;
         }
 
-       public List<LeaveRequestDTO> GetHRManagerLeaveRequests()
-       {
+        public List<LeaveRequestDTO> GetHRManagerLeaveRequests()
+        {
             //var authenticatedUserId = _userContextService.GetUserId();
             var authenticatedUserId = 2;
 
             var leaveRequestsDTOs = _dataContext.LeaveRequests
                 .Include(i => i.Employee)
-                .Include(i=> i.AbsenceReason)
+                .Include(i => i.AbsenceReason)
                 .Where(lr => lr.Employee != null && lr.Employee.PeoplePartnerId == authenticatedUserId)
-                .Select(elr => new LeaveRequestDTO() 
+                .Select(elr => new LeaveRequestDTO()
                 {
                     Id = elr.Id,
                     Employee = elr.Employee!.FullName,
                     StartDate = elr.StartDate.ToString(),
                     EndDate = elr.EndDate.ToString(),
                     AbsenceReason = new CombinedValueDTO()
-                    { 
-                        Id = elr.AbsenceReason!.Id, 
-                        Value = elr.AbsenceReason!.Value, 
+                    {
+                        Id = elr.AbsenceReason!.Id,
+                        Value = elr.AbsenceReason!.Value,
                     },
                     Status = elr.Status.ToString(),
                     Comment = elr.Comment,
@@ -164,7 +165,7 @@ namespace Out_Of_Office.Server.Services
                 }).ToList();
 
             return leaveRequestsDTOs;
-       }
+        }
 
         public List<LeaveRequestDTO> GetEmployeeLeaveRequests()
         {
@@ -173,7 +174,7 @@ namespace Out_Of_Office.Server.Services
 
             var leaveRequestsDTOs = _dataContext.LeaveRequests
                 .Include(i => i.AbsenceReason)
-                .Include (i=> i.Employee)
+                .Include(i => i.Employee)
                 .Where(lr => lr.EmployeeId == authenticatedUserId)
                 .Select(elr => new LeaveRequestDTO()
                 {
@@ -205,28 +206,13 @@ namespace Out_Of_Office.Server.Services
                 AbsenceReasonId = newLeaveRequestDTO.AbsenceReason,
                 StartDate = DateOnly.Parse(newLeaveRequestDTO.StartDate),
                 EndDate = DateOnly.Parse(newLeaveRequestDTO.EndDate),
-                Comment = newLeaveRequestDTO.Comment?? "",
+                Comment = newLeaveRequestDTO.Comment ?? "",
             };
 
             _dataContext.LeaveRequests.Add(newLeaveRequest);
 
             Utilities.DatabaseUtilities.SaveChangesToDatabase(_dataContext);
 
-
-            if(newLeaveRequest.Id == 0)
-            {
-                throw new BadHttpRequestException("Problem with leave request occurred");
-            }
-
-            var newApprovalRequest = new ApprovalRequest()
-            {
-                LeaveRequestId = newLeaveRequest.Id,
-                Status = ERequestStatus.New,
-            };
-
-            _dataContext.ApprovalRequests.Add(newApprovalRequest);
-
-            Utilities.DatabaseUtilities.SaveChangesToDatabase(_dataContext);
         }
 
         public void EditEmployeeLeaveRequest(EditLeaveRequestDTO editLeaveRequestDTO)
@@ -248,6 +234,23 @@ namespace Out_Of_Office.Server.Services
             _dataContext.LeaveRequests.Update(oldLeaveRequest);
 
             Utilities.DatabaseUtilities.SaveChangesToDatabase(_dataContext);
+        }
+
+        public void ChangeLeaveRequestStatus(ChangeLeaveRequestStatusDTO newStatusDTO)
+        {
+
+            if (newStatusDTO.NewStatus == ERequestStatus.Submitted.ToString())
+            {
+                SubmitLeaveRequest(newStatusDTO.RequestId);
+            }
+            else if (newStatusDTO.NewStatus == ERequestStatus.Cancelled.ToString())
+            {
+                CancellLeaveRequest(newStatusDTO.RequestId);
+            }
+            else {
+                throw new BadHttpRequestException("Wrong leave request status");
+            }
+
         }
 
         public List<ApprovalRequestDTO> GetHRManagerApprovalRequests()
@@ -298,7 +301,7 @@ namespace Out_Of_Office.Server.Services
 
             var authenticatedUserId = 2;
 
-            var projectsIds =  _dataContext.Employees.Where(e => e.PeoplePartnerId == authenticatedUserId && e.ProjectId != 0)
+            var projectsIds = _dataContext.Employees.Where(e => e.PeoplePartnerId == authenticatedUserId && e.ProjectId != 0)
                 .Select(e => e.ProjectId)
                 .Distinct()
                 .ToList();
@@ -310,13 +313,13 @@ namespace Out_Of_Office.Server.Services
 
             var projectsDTOs = projects.Select(p => new ProjectDTO()
             {
-                Id= p.Id,
+                Id = p.Id,
                 ProjectType = p.ProjectType!.Value,
                 ProjectManager = _dataContext.Employees.First(e => e.Id == p.ProjectManagerId).FullName,
                 StartDate = p.StartDate.ToString(),
-                EndDate = p.EndDate.ToString()?? "",
+                EndDate = p.EndDate.ToString() ?? "",
                 Status = p.Status.ToString(),
-                Comment= p.Comment,
+                Comment = p.Comment,
             }).ToList();
 
             return projectsDTOs;
@@ -337,13 +340,13 @@ namespace Out_Of_Office.Server.Services
                 .Where(p => p.Id == employee.ProjectId)
                 .Select(p => new ProjectDTO()
                 {
-                  Id = p.Id,
-                  ProjectType = p.ProjectType!.Value,
-                  ProjectManager = _dataContext.Employees.First(e => e.Id == p.ProjectManagerId).FullName,
-                  StartDate = p.StartDate.ToString(),
-                  EndDate = p.EndDate.ToString() ?? "",
-                  Status = p.Status.ToString(),
-                  Comment = p.Comment,
+                    Id = p.Id,
+                    ProjectType = p.ProjectType!.Value,
+                    ProjectManager = _dataContext.Employees.First(e => e.Id == p.ProjectManagerId).FullName,
+                    StartDate = p.StartDate.ToString(),
+                    EndDate = p.EndDate.ToString() ?? "",
+                    Status = p.Status.ToString(),
+                    Comment = p.Comment,
                 }).ToList();
 
             return projectsDtos;
@@ -359,9 +362,13 @@ namespace Out_Of_Office.Server.Services
             {
                 ApproveRequest(newStatusDTO.RequestId, authenticatedUserId);
             }
-            else
+            else if(newStatusDTO.NewStatus == ERequestStatus.Rejected.ToString())
             {
                 RejectRequest(newStatusDTO.RequestId, newStatusDTO.Comment);
+            }
+            else
+            {
+                throw new BadHttpRequestException("Wrong leave request status");
             }
         }
 
@@ -380,7 +387,7 @@ namespace Out_Of_Office.Server.Services
             }
 
             return combinedValueDTOs;
-            
+
         }
         public List<CombinedValueDTO> GetPeoplePartnerOptions()
         {
@@ -439,7 +446,7 @@ namespace Out_Of_Office.Server.Services
                 Value = ar.Value,
             }).ToList();
 
-            return absenceReasonsDTOs ;
+            return absenceReasonsDTOs;
 
         }
         private void ApproveRequest(int requestId, int approverId)
@@ -447,7 +454,7 @@ namespace Out_Of_Office.Server.Services
             var approvalRequest = _dataContext.ApprovalRequests.
                 Include(i => i.LeaveRequest).
                 ThenInclude(e => e!.Employee)
-                .FirstOrDefault(ar => ar.Id == requestId) ?? 
+                .FirstOrDefault(ar => ar.Id == requestId) ??
                 throw new BadHttpRequestException("Request not found");
 
             var leaveDays = approvalRequest.LeaveRequest!.EndDate.DayNumber - approvalRequest.LeaveRequest.StartDate.DayNumber;
@@ -467,7 +474,7 @@ namespace Out_Of_Office.Server.Services
             DatabaseUtilities.SaveChangesToDatabase(_dataContext);
         }
 
-        private void RejectRequest(int requestId, string? comment) 
+        private void RejectRequest(int requestId, string? comment)
         {
             var approvalRequest = _dataContext.ApprovalRequests.
                Include(i => i.LeaveRequest)
@@ -476,11 +483,66 @@ namespace Out_Of_Office.Server.Services
 
             approvalRequest.Status = ERequestStatus.Rejected;
             approvalRequest.LeaveRequest!.Status = ERequestStatus.Rejected;
-            approvalRequest.Comment = comment?? "";
+            approvalRequest.Comment = comment ?? "";
 
             _dataContext.Update(approvalRequest);
 
             DatabaseUtilities.SaveChangesToDatabase(_dataContext);
+        }
+
+        private void SubmitLeaveRequest(int requestId)
+        {
+            var leaveRequest = _dataContext.LeaveRequests
+                .FirstOrDefault(lr => lr.Id == requestId) ??
+                throw new BadHttpRequestException("Leave request not found");
+
+
+            if (leaveRequest.Status != ERequestStatus.New)
+            {
+                var oldaAprovalRequest = _dataContext.ApprovalRequests
+                    .FirstOrDefault(ar => ar.LeaveRequestId == leaveRequest.Id) ??
+                    throw new BadHttpRequestException("Connected approval request not found");
+
+                oldaAprovalRequest.Status = ERequestStatus.Submitted;
+
+                _dataContext.Update(oldaAprovalRequest);
+            }
+            else
+            {
+                var newApprovalRequest = new ApprovalRequest()
+                {
+                    LeaveRequestId = leaveRequest.Id,
+                    Status = ERequestStatus.New,
+                };
+
+                _dataContext.ApprovalRequests.Add(newApprovalRequest);
+            }
+
+            leaveRequest.Status = ERequestStatus.Submitted;
+
+            _dataContext.LeaveRequests.Update(leaveRequest);
+
+            Utilities.DatabaseUtilities.SaveChangesToDatabase(_dataContext);
+        }
+
+        private void CancellLeaveRequest(int requestId)
+        {
+            var leaveRequest = _dataContext.LeaveRequests
+                .FirstOrDefault(lr => lr.Id == requestId) ??
+                throw new BadHttpRequestException("Leave request not found");
+            leaveRequest.Status = ERequestStatus.Cancelled;
+
+            _dataContext.LeaveRequests.Update(leaveRequest);
+
+            var aprovalRequest = _dataContext.ApprovalRequests
+                    .FirstOrDefault(ar => ar.LeaveRequestId == leaveRequest.Id) ??
+                    throw new BadHttpRequestException("Connected approval request not found");
+
+            aprovalRequest.Status = ERequestStatus.Cancelled;
+
+            _dataContext.ApprovalRequests.Update(aprovalRequest);
+
+            Utilities.DatabaseUtilities.SaveChangesToDatabase(_dataContext);
         }
     }
 }

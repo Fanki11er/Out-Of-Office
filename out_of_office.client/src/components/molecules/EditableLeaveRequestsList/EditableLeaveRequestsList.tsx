@@ -26,6 +26,8 @@ import LeaveRequestForm from "../../organisms/LeaveRequestForm/LeaveRequestForm"
 import { StyledDefaultButton } from "../../atoms/StyledDefaultButton/StyledDefaultButton.styles";
 import ChangeStatusCell from "../ChangeStatusCell/ChangeStatusCell";
 import { StyledButtonWrapper } from "./EditableLeaveRequestsList.styles";
+import LeaveRequestDetails from "../LeaveRequestDetails/LeaveRequestDetails";
+import LeaveRequestSubmitForm from "../../organisms/LeaveRequestSubmitForm/LeaveRequestSubmitForm";
 
 const columnHelper = createColumnHelper<LeaveRequestDTO>();
 
@@ -134,19 +136,22 @@ const EditableLeaveRequestsList = () => {
   const toggleIsNewRequestFormOpened = () => {
     setIsNewRequestFormOpened((prev) => !prev);
   };
-  //!!
-  const editFormModal = createPortal(
-    <Modal handleCloseModal={handleDeselectRow}>
-      {
-        <LeaveRequestForm
-          leaveRequest={getSelectedRow(selectedRowId)}
-          formType={"Edit"}
-        />
-      }
-    </Modal>,
-    document.body
-  );
 
+  const renderEditFormModal = () => {
+    const row = getSelectedRow(selectedRowId);
+
+    const editFormModal = createPortal(
+      <Modal handleCloseModal={handleDeselectRow}>
+        {row?.status !== "Accepted" ? (
+          <LeaveRequestForm leaveRequest={row} formType={"Edit"} />
+        ) : (
+          <LeaveRequestDetails leaveRequest={row} />
+        )}
+      </Modal>,
+      document.body
+    );
+    return editFormModal;
+  };
   const newRequestFormModal = createPortal(
     <Modal handleCloseModal={toggleIsNewRequestFormOpened}>
       {
@@ -159,13 +164,18 @@ const EditableLeaveRequestsList = () => {
     document.body
   );
 
-  //!!
-  const changeStatusModal = createPortal(
-    <Modal handleCloseModal={handleDeselectRowForStatusChange}>
-      <div>Change Status</div>
-    </Modal>,
-    document.body
-  );
+  const renderLeaveRequestSubmitForm = () => {
+    const row = getSelectedRow(selectedRowForStatusChange);
+
+    const changeStatusModal = createPortal(
+      <Modal handleCloseModal={handleDeselectRowForStatusChange}>
+        {row && <LeaveRequestSubmitForm leaveRequest={row} />}
+      </Modal>,
+      document.body
+    );
+
+    return changeStatusModal;
+  };
 
   const getLeaveRequestsListEmployee = async () => {
     const response = await axiosPrivate.get(employeeLeaveRequestsListEndpoint);
@@ -219,9 +229,9 @@ const EditableLeaveRequestsList = () => {
       {!isLoading && !error && (
         <TableWithFiltersAndSorting table={table} dataLength={data.length} />
       )}
-      {selectedRowId >= 0 && editFormModal}
+      {selectedRowId >= 0 && renderEditFormModal()}
       {isNewRequestFormOpened && newRequestFormModal}
-      {selectedRowForStatusChange >= 0 && changeStatusModal}
+      {selectedRowForStatusChange >= 0 && renderLeaveRequestSubmitForm()}
     </StyledDefaultListContainer>
   );
 };

@@ -69,6 +69,7 @@ builder.Services.AddScoped<IValidator<EmployeeDTO>, EmployeeDTOValidator>();
 builder.Services.AddScoped<IValidator<ChangeApprovalRequestStatusDTO>, ChangeApprovalRequestStatusDTOValidator>();
 builder.Services.AddScoped<IValidator<NewLeaveRequestDTO>, NewLeaveRequestDTOValidator>();
 builder.Services.AddScoped<IValidator<EditLeaveRequestDTO>, EditLeaveRequestDTOValidator>();
+builder.Services.AddScoped<IValidator<ChangeLeaveRequestStatusDTO>, ChangeLeaveRequestStatusDTOValidator>();
 
 
 // Add MiddleWare

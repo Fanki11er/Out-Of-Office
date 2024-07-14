@@ -23,7 +23,7 @@ type ChangeApprovalRequestStatusDTO = {
   Comment?: string;
 };
 
-const options: SelectOption[] = [
+const options: SelectOption<ApprovalRequestStatus>[] = [
   {
     value: "Accepted",
     displayValue: "Accept",
@@ -69,13 +69,13 @@ const ApproveRequestForm = ({ approveRequest }: Props) => {
         values: ApprovalRequestFormValues,
         { setSubmitting, resetForm }: FormikHelpers<ApprovalRequestFormValues>
       ) => {
-        const registerEmployeeDTO: ChangeApprovalRequestStatusDTO = {
+        const changeApprovalRequestStatusDTO: ChangeApprovalRequestStatusDTO = {
           RequestId: approveRequest.id,
           NewStatus: values[STATUS_FIELD_NAME],
           Comment: values[COMMENT_FIELD_NAME],
         };
 
-        mutate(registerEmployeeDTO, {
+        mutate(changeApprovalRequestStatusDTO, {
           onSuccess: () => {
             queryClient.invalidateQueries({
               refetchType: "all",

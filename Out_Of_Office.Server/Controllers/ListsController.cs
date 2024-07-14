@@ -51,6 +51,14 @@ namespace Out_Of_Office.Server.Controllers
             return Ok();
         }
 
+        [HttpPut("leaveRequestsEmployeeChangeStatus")]
+        public ActionResult ChangeLeaveRequestStatus([FromBody] ChangeLeaveRequestStatusDTO newStatusDTO)
+        {
+            _listService.ChangeLeaveRequestStatus(newStatusDTO);
+
+            return Ok();
+        }
+
         [HttpGet("approvalRequestsManagers")]
         public ActionResult<List<ApprovalRequestDTO>> GetHRManagerApprovalRequests()
         {

@@ -82,7 +82,7 @@ namespace Out_Of_Office.Server.Data
 
                     _dataContext.AddRange(approval);
 
-                    leaveRequest.Status = Enums.ERequestStatus.Submited;
+                    leaveRequest.Status = Enums.ERequestStatus.Submitted;
 
                     _dataContext.Update(leaveRequest);
 
