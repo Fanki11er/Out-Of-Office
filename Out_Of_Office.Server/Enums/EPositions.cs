@@ -2,6 +2,7 @@
 
 namespace Out_Of_Office.Server.Enums
 {
+    [Flags]
     public enum EPositions
     {
         Employee = 0,

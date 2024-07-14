@@ -23,8 +23,8 @@ namespace Out_Of_Office.Server.Services
         private readonly IUserContextService _userContextService = userContextService;
         public void RegisterEmployee(RegisterEmployeeDTO employeeDTO)
         {
-            //var userId = _userContextService.GetUserId();
-            var userId = 4;
+            var userId = _userContextService.GetUserId();
+ 
 
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(employeeDTO.Password);
 
@@ -61,7 +61,7 @@ namespace Out_Of_Office.Server.Services
             var loggedEmployeeDTO = new LoggedEmployeeDTO()
             {
                 FullName = employee.FullName,
-                Position = employee.Position,
+                Position = employee.Position.ToString(),
                 Token = token,
             };
 
@@ -87,7 +87,7 @@ namespace Out_Of_Office.Server.Services
                 _authenticationSettings.JWTIssuer,
                 _authenticationSettings.JWTIssuer,
                 claims,
-                DateTime.Now.AddDays(_authenticationSettings.JWTExpireDays),
+                expires: DateTime.Now.AddDays(_authenticationSettings.JWTExpireDays),
                 signingCredentials: credentials
                 );
 

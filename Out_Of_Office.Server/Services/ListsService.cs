@@ -42,8 +42,7 @@ namespace Out_Of_Office.Server.Services
         {
             List<EmployeeDTO> employeeesDTOs = [];
 
-            //var authenticatedUserId = _userContextService.GetUserId();
-            var authenticatedUserId = 2;
+            var authenticatedUserId = _userContextService.GetUserId();
 
             var employees = _dataContext.Employees
                 .Where(emp => emp.PeoplePartnerId == authenticatedUserId)
@@ -141,8 +140,7 @@ namespace Out_Of_Office.Server.Services
 
         public List<LeaveRequestDTO> GetHRManagerLeaveRequests()
         {
-            //var authenticatedUserId = _userContextService.GetUserId();
-            var authenticatedUserId = 2;
+            var authenticatedUserId = _userContextService.GetUserId();
 
             var leaveRequestsDTOs = _dataContext.LeaveRequests
                 .Include(i => i.Employee)
@@ -169,9 +167,8 @@ namespace Out_Of_Office.Server.Services
 
         public List<LeaveRequestDTO> GetEmployeeLeaveRequests()
         {
-            //var authenticatedUserId = _userContextService.GetUserId();
-            var authenticatedUserId = 4;
-
+            var authenticatedUserId = _userContextService.GetUserId();
+         
             var leaveRequestsDTOs = _dataContext.LeaveRequests
                 .Include(i => i.AbsenceReason)
                 .Include(i => i.Employee)
@@ -196,9 +193,7 @@ namespace Out_Of_Office.Server.Services
 
         public void CreateNewEmployeeLeaveRequest(NewLeaveRequestDTO newLeaveRequestDTO)
         {
-            //var authenticatedUserId = _userContextService.GetUserId();
-
-            var authenticatedUserId = 4;
+            var authenticatedUserId = _userContextService.GetUserId();
 
             var newLeaveRequest = new LeaveRequest()
             {
@@ -255,9 +250,7 @@ namespace Out_Of_Office.Server.Services
 
         public List<ApprovalRequestDTO> GetHRManagerApprovalRequests()
         {
-            //var authenticatedUserId = _userContextService.GetUserId();
-
-            var authenticatedUserId = 2;
+            var authenticatedUserId = _userContextService.GetUserId();
 
             var approvalRequests = _dataContext.ApprovalRequests
                 .Include(i => i.LeaveRequest)
@@ -277,9 +270,7 @@ namespace Out_Of_Office.Server.Services
 
         public List<ApprovalRequestDTO> GetEmployeeApprovalRequests()
         {
-            //var authenticatedUserId = _userContextService.GetUserId();
-
-            var authenticatedUserId = 5;
+            var authenticatedUserId = _userContextService.GetUserId();
 
             var approvalRequestsDTOs = _dataContext.ApprovalRequests
                 .Include(i => i.LeaveRequest)
@@ -297,9 +288,7 @@ namespace Out_Of_Office.Server.Services
 
         public List<ProjectDTO> GetHRManagerProjects()
         {
-            //var authenticatedUserId = _userContextService.GetUserId();
-
-            var authenticatedUserId = 2;
+            var authenticatedUserId = _userContextService.GetUserId();
 
             var projectsIds = _dataContext.Employees.Where(e => e.PeoplePartnerId == authenticatedUserId && e.ProjectId != 0)
                 .Select(e => e.ProjectId)
@@ -327,9 +316,7 @@ namespace Out_Of_Office.Server.Services
 
         public List<ProjectDTO> GetEmployeeProjects()
         {
-            //var authenticatedUserId = _userContextService.GetUserId();
-
-            var authenticatedUserId = 5;
+            var authenticatedUserId = _userContextService.GetUserId();
 
             var employee = _dataContext.Employees
                 .FirstOrDefault(e => e.Id == authenticatedUserId) ??
@@ -354,9 +341,7 @@ namespace Out_Of_Office.Server.Services
 
         public void ChangeApprovalRequestStatus(ChangeApprovalRequestStatusDTO newStatusDTO)
         {
-            //var authenticatedUserId = _userContextService.GetUserId();
-
-            var authenticatedUserId = 2;
+            var authenticatedUserId = _userContextService.GetUserId();
 
             if (newStatusDTO.NewStatus == ERequestStatus.Accepted.ToString())
             {

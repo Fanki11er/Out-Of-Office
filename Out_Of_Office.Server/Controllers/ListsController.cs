@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Out_Of_Office.Server.Enums;
 using Out_Of_Office.Server.Models;
 using Out_Of_Office.Server.Services;
 
@@ -7,11 +9,14 @@ namespace Out_Of_Office.Server.Controllers
 
     [Route("lists")]
     [ApiController]
-    public class ListsController(IListService listService) :ControllerBase
+    [Authorize]
+    public class ListsController(IListService listService) : ControllerBase
     {
         private readonly IListService _listService = listService;
+        private string Roles = "";
 
         [HttpGet("employeesHR")]
+        [Authorize(Roles = "HR_Manager")]
         public ActionResult<EmployeeDTO[]> GetHRManagerEmployees()
         {
             var result = _listService.GetHRManagerEmployees();
@@ -20,6 +25,7 @@ namespace Out_Of_Office.Server.Controllers
         }
 
         [HttpGet("leaveRequestsHR")]
+        [Authorize(Roles = "HR_Manager")]
         public ActionResult<List<LeaveRequestDTO>> GetHRManagerLeaveRequests()
         {
             var result = _listService.GetHRManagerLeaveRequests();
@@ -28,6 +34,7 @@ namespace Out_Of_Office.Server.Controllers
         }
 
         [HttpGet("leaveRequestsEmployee")]
+        [Authorize(Roles = "Employee")]
         public ActionResult<List<LeaveRequestDTO>> GetEmployeeLeaveRequests()
         {
             var result = _listService.GetEmployeeLeaveRequests();
@@ -36,6 +43,7 @@ namespace Out_Of_Office.Server.Controllers
         }
 
         [HttpPost("leaveRequestsEmployee")]
+        [Authorize(Roles = "Employee")]
         public ActionResult CreateNewEmployeeLeaveRequest([FromBody] NewLeaveRequestDTO newLeaveRequestDTO)
         {
             _listService.CreateNewEmployeeLeaveRequest(newLeaveRequestDTO);
@@ -44,6 +52,7 @@ namespace Out_Of_Office.Server.Controllers
         }
 
         [HttpPut("leaveRequestsEmployee")]
+        [Authorize(Roles = "Employee")]
         public ActionResult EditEmployeeLeaveRequest([FromBody] EditLeaveRequestDTO editLeaveRequestDTO)
         {
             _listService.EditEmployeeLeaveRequest(editLeaveRequestDTO);
@@ -52,6 +61,7 @@ namespace Out_Of_Office.Server.Controllers
         }
 
         [HttpPut("leaveRequestsEmployeeChangeStatus")]
+        [Authorize(Roles = "Employee")]
         public ActionResult ChangeLeaveRequestStatus([FromBody] ChangeLeaveRequestStatusDTO newStatusDTO)
         {
             _listService.ChangeLeaveRequestStatus(newStatusDTO);
@@ -60,6 +70,7 @@ namespace Out_Of_Office.Server.Controllers
         }
 
         [HttpGet("approvalRequestsManagers")]
+        [Authorize(Roles = "HR_Manager,Project_Manager")]
         public ActionResult<List<ApprovalRequestDTO>> GetHRManagerApprovalRequests()
         {
             var result = _listService.GetHRManagerApprovalRequests();
@@ -68,6 +79,7 @@ namespace Out_Of_Office.Server.Controllers
         }
 
         [HttpGet("approvalRequestsEmployee")]
+        [Authorize(Roles = "Employee")]
         public ActionResult<List<ApprovalRequestDTO>> GetEmployeeApprovalRequests()
         {
             var result = _listService.GetEmployeeApprovalRequests();
@@ -76,6 +88,7 @@ namespace Out_Of_Office.Server.Controllers
         }
 
         [HttpGet("projectsHR")]
+        [Authorize(Roles = "HR_Manager")]
         public ActionResult<List<ProjectDTO>> GetHRManagerProjects()
         {
             var result = _listService.GetHRManagerProjects();
@@ -84,6 +97,7 @@ namespace Out_Of_Office.Server.Controllers
         }
 
         [HttpGet("projectsEmployee")]
+        [Authorize(Roles = "Employee")]
         public ActionResult<List<ProjectDTO>> GetEmployeeProjects()
         {
             var result = _listService.GetEmployeeProjects();
@@ -92,6 +106,7 @@ namespace Out_Of_Office.Server.Controllers
         }
 
         [HttpPut("approvalRequestsManagers")]
+        [Authorize(Roles = "HR_Manager,Project_Manager")]
         public ActionResult ChangeApproveRequestStatus([FromBody] ChangeApprovalRequestStatusDTO newStatusDTO)
         {
             _listService.ChangeApprovalRequestStatus(newStatusDTO);
@@ -100,6 +115,7 @@ namespace Out_Of_Office.Server.Controllers
         }
 
         [HttpPut("employeesHR")]
+        [Authorize(Roles = "HR_Manager")]
         public ActionResult<EmployeeDTO> UpdateHRManagerEmployeeList([FromBody] EmployeeDTO employeeDTO)
         {
             var result = _listService.UpdateHRManagerEmployeeList(employeeDTO);

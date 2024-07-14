@@ -23,12 +23,16 @@ const AppRouter = () => {
         <Route path={root} element={<LoginView />} />
         <Route element={<RequireAuth />}>
           <Route path={lists} element={<ListsView />}>
-            <Route path={employeeList} element={<EmployeesList />} />
-            <Route path={leaveRequestsList} element={<LeaveRequestsLists />} />
+            <Route
+              index
+              path={leaveRequestsList}
+              element={<LeaveRequestsLists />}
+            />
             <Route
               path={approvalRequestsList}
               element={<ApprovalRequestsLists />}
             />
+            <Route path={employeeList} element={<EmployeesList />} />
             <Route path={projectsList} element={<ProjectsList />} />
           </Route>
         </Route>

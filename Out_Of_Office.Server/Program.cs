@@ -1,6 +1,7 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Out_Of_Office.Server;
 using Out_Of_Office.Server.Data;
@@ -28,6 +29,7 @@ builder.Services.AddAuthentication()
 {
     cfg.RequireHttpsMetadata = true;
     cfg.SaveToken = true;
+    cfg.UseSecurityTokenValidators = true;
     cfg.TokenValidationParameters = new TokenValidationParameters
     {
         ValidIssuer = authenticationSettings.JWTIssuer,

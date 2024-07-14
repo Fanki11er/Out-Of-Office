@@ -44,7 +44,7 @@ const columns = [
   columnHelper.accessor("absenceReason", {
     header: "Absence reason",
     size: 180,
-    cell: (info) => info.getValue(),
+    cell: (info) => info.getValue().value,
     meta: {
       filterVariant: "combinedSelect",
     },
