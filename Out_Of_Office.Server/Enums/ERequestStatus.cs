@@ -5,7 +5,7 @@ namespace Out_Of_Office.Server.Enums
     public enum ERequestStatus
     {
         New = 0,
-        Submited = 1,
+        Submitted = 1,
         Cancelled = 2,
         Accepted = 3,
         Rejected = 4,

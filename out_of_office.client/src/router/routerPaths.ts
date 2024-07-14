@@ -1,5 +1,8 @@
 export const routerPaths = {
   root: "/Login",
-  user: "/User",
   lists: "/Lists",
+  employeeList: "Employee",
+  leaveRequestsList: "LeaveRequest",
+  approvalRequestsList: "ApprovalRequest",
+  projectsList: "Project",
 };

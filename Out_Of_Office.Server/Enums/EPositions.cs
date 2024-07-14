@@ -2,10 +2,12 @@
 
 namespace Out_Of_Office.Server.Enums
 {
+    [Flags]
     public enum EPositions
     {
         Employee = 0,
-        ProjectManager = 1,
-        HRManager = 2,
+        Project_Manager = 1,
+        HR_Manager = 2,
+        HR_Director = 3,
     }
 }

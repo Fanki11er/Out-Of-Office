@@ -3,7 +3,6 @@ import { StyledLoginForm } from "./LoginForm.styles";
 import FormInput from "../../molecules/FormInput/FormInput";
 import { StyledDefaultButton } from "../../atoms/StyledDefaultButton/StyledDefaultButton.styles";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
 import axios from "../../../api/axios";
 import useAuth from "../../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +11,7 @@ import { StyledFormLoadingIndicator } from "../../atoms/StyledDefaultLoadingIndi
 import { loginEndpoint } from "../../../api/apiEndpoints";
 import { AuthenticatedUser } from "../../../providers/AuthProvider";
 import { routerPaths } from "../../../router/routerPaths";
+import { getErrorMessages } from "../../../Utilities/utilities";
 
 interface LoginFormValues {
   login: string;
@@ -28,8 +28,6 @@ const PASSWORD_FIELD_NAME = "password";
 
 const { lists } = routerPaths;
 
-const controller = new AbortController();
-
 const LoginForm = () => {
   const initialValues: LoginFormValues = {
     [LOGIN_FIELD_NAME]: "",
@@ -40,16 +38,9 @@ const LoginForm = () => {
 
   const { login } = useAuth();
 
-  useEffect(() => {
-    return () => {
-      controller.abort();
-    };
-  }, []);
-
   const { mutate, isPending, isError, error } = useMutation({
     mutationFn: (values: LoginUserDTO) => {
       return axios.post(loginEndpoint, values, {
-        //signal: controller.signal,
         withCredentials: true,
       });
     },
@@ -80,7 +71,7 @@ const LoginForm = () => {
     >
       <StyledLoginForm>
         {isError && !isPending && (
-          <StyledFormError>{error.message}</StyledFormError>
+          <StyledFormError>{getErrorMessages(error)}</StyledFormError>
         )}
         <FormInput name={LOGIN_FIELD_NAME} label="Login" />
         <FormInput

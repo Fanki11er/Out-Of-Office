@@ -47,20 +47,21 @@ namespace Out_Of_Office.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Approver")
+                    b.Property<int?>("ApproverId")
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LeaveRequest")
+                    b.Property<int>("LeaveRequestId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LeaveRequestId");
 
                     b.ToTable("ApprovalRequests");
                 });
@@ -91,19 +92,24 @@ namespace Out_Of_Office.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PeoplePartner")
+                    b.Property<int?>("PeoplePartnerId")
                         .HasColumnType("int");
 
                     b.Property<int>("Position")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("Subdivision")
+                    b.Property<int>("SubdivisionId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SubdivisionId");
 
                     b.ToTable("Employees");
                 });
@@ -123,6 +129,9 @@ namespace Out_Of_Office.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<DateOnly>("EndDate")
                         .HasColumnType("date");
 
@@ -135,6 +144,8 @@ namespace Out_Of_Office.Server.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AbsenceReasonId");
+
+                    b.HasIndex("EmployeeId");
 
                     b.ToTable("LeaveRequests");
                 });
@@ -154,7 +165,7 @@ namespace Out_Of_Office.Server.Migrations
                     b.Property<DateOnly?>("EndDate")
                         .HasColumnType("date");
 
-                    b.Property<int>("ProjectManager")
+                    b.Property<int>("ProjectManagerId")
                         .HasColumnType("int");
 
                     b.Property<int>("ProjectTypeId")
@@ -207,6 +218,28 @@ namespace Out_Of_Office.Server.Migrations
                     b.ToTable("Subdivisions");
                 });
 
+            modelBuilder.Entity("Out_Of_Office.Server.Entities.ApprovalRequest", b =>
+                {
+                    b.HasOne("Out_Of_Office.Server.Entities.LeaveRequest", "LeaveRequest")
+                        .WithMany()
+                        .HasForeignKey("LeaveRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LeaveRequest");
+                });
+
+            modelBuilder.Entity("Out_Of_Office.Server.Entities.Employee", b =>
+                {
+                    b.HasOne("Out_Of_Office.Server.Entities.Subdivision", "Subdivision")
+                        .WithMany()
+                        .HasForeignKey("SubdivisionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subdivision");
+                });
+
             modelBuilder.Entity("Out_Of_Office.Server.Entities.LeaveRequest", b =>
                 {
                     b.HasOne("Out_Of_Office.Server.Entities.AbsenceReason", "AbsenceReason")
@@ -215,7 +248,15 @@ namespace Out_Of_Office.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Out_Of_Office.Server.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("AbsenceReason");
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("Out_Of_Office.Server.Entities.Project", b =>

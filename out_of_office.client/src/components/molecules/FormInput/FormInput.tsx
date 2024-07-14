@@ -1,25 +1,35 @@
-import {
-  StyledFormInput,
-  StyledFormInputErrorIndicator,
-  StyledInputLabel,
-} from "./FormInput.styles";
+import { ErrorMessage, useField } from "formik";
+import { StyledDefaultFormInputErrorIndicator } from "../../atoms/StyledDefaultFormInputErrorIndicator/StyledDefaultFormInputErrorIndicator.styles";
+import { StyledDefaultInputLabel } from "../../atoms/StyledDefaultInputLabel/StyledDefaultInputLabel.styles";
+import { StyledFormInput } from "./FormInput.styles";
 
 type InputProps = {
   name: string;
   label: string;
-  error?: string;
   type?: string;
+  className?: string;
 };
 
-const FormInput = ({ name, label, error, type }: InputProps) => {
+const FormInput = ({ name, label, type, className }: InputProps) => {
+  const [field, meta] = useField(name);
   return (
-    <StyledInputLabel>
+    <StyledDefaultInputLabel>
       {label}
-      <StyledFormInput name={name} type={type ? type : "text"} />
-      {error && (
-        <StyledFormInputErrorIndicator>{error}</StyledFormInputErrorIndicator>
-      )}
-    </StyledInputLabel>
+      <StyledFormInput
+        {...field}
+        type={type ? type : "text"}
+        className={className}
+        $isError={meta.error && meta.touched ? true : false}
+      />
+      <ErrorMessage
+        name={name}
+        render={(msg) => (
+          <StyledDefaultFormInputErrorIndicator>
+            {msg}
+          </StyledDefaultFormInputErrorIndicator>
+        )}
+      />
+    </StyledDefaultInputLabel>
   );
 };
 

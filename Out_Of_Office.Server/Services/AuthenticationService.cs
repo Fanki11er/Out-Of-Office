@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using Out_Of_Office.Server.Data;
 using Out_Of_Office.Server.Entities;
+using Out_Of_Office.Server.Enums;
 using Out_Of_Office.Server.Models;
 using Out_Of_Office.Server.Utilities;
 using System.IdentityModel.Tokens.Jwt;
@@ -15,13 +16,16 @@ namespace Out_Of_Office.Server.Services
         public void RegisterEmployee(RegisterEmployeeDTO employeeDTO);
         public LoggedEmployeeDTO LoginEmployee(LoginEmployeeDTO employeeDTO);
     }
-    public class AuthenticationService(DataContext dataContext, AuthenticationSettings authenticationSettings) : IAuthenticationService
+    public class AuthenticationService(DataContext dataContext, AuthenticationSettings authenticationSettings, IUserContextService userContextService) : IAuthenticationService
     {
         private readonly DataContext _dataContext = dataContext;
         private readonly AuthenticationSettings _authenticationSettings = authenticationSettings;
-
+        private readonly IUserContextService _userContextService = userContextService;
         public void RegisterEmployee(RegisterEmployeeDTO employeeDTO)
         {
+            var userId = _userContextService.GetUserId();
+ 
+
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(employeeDTO.Password);
 
             Employee newEmployee = new()
@@ -29,16 +33,16 @@ namespace Out_Of_Office.Server.Services
                 FullName = employeeDTO.FullName,
                 PasswordHash = passwordHash,
                 Login = employeeDTO.Login,
-                Subdivision = employeeDTO.Subdivision,
-                Position = employeeDTO.Position,
-                Status = employeeDTO.Status,
-                PeoplePartner = employeeDTO.PeoplePartner,
+                SubdivisionId = employeeDTO.Subdivision,
+                Position = (EPositions)(employeeDTO.Position),
+                Status = EStatus.Inactive,
+                PeoplePartnerId = userId,
                 OutOfOfficeBalance = 26,
             };
 
             _dataContext.Add(newEmployee);
 
-            DatabaseUtilities.SaveChangesToDatabase(_dataContext, "Can't save user in database");
+            DatabaseUtilities.SaveChangesToDatabase(_dataContext, "Can't save employee in database");
 
         }
 
@@ -57,7 +61,7 @@ namespace Out_Of_Office.Server.Services
             var loggedEmployeeDTO = new LoggedEmployeeDTO()
             {
                 FullName = employee.FullName,
-                Position = employee.Position,
+                Position = employee.Position.ToString(),
                 Token = token,
             };
 
@@ -83,7 +87,7 @@ namespace Out_Of_Office.Server.Services
                 _authenticationSettings.JWTIssuer,
                 _authenticationSettings.JWTIssuer,
                 claims,
-                DateTime.Now.AddDays(_authenticationSettings.JWTExpireDays),
+                expires: DateTime.Now.AddDays(_authenticationSettings.JWTExpireDays),
                 signingCredentials: credentials
                 );
 

@@ -1,10 +1,12 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Out_Of_Office.Server;
 using Out_Of_Office.Server.Data;
 using Out_Of_Office.Server.MiddleWares;
+using Out_Of_Office.Server.Models;
 using Out_Of_Office.Server.Services;
 using Out_Of_Office.Server.Utilities;
 using Out_Of_Office.Server.Validators;
@@ -27,6 +29,7 @@ builder.Services.AddAuthentication()
 {
     cfg.RequireHttpsMetadata = true;
     cfg.SaveToken = true;
+    cfg.UseSecurityTokenValidators = true;
     cfg.TokenValidationParameters = new TokenValidationParameters
     {
         ValidIssuer = authenticationSettings.JWTIssuer,
@@ -44,6 +47,12 @@ builder.Services.AddScoped<DbSeeder, DbSeeder>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<IUserContextService, UserContextService>();
+
+builder.Services.AddScoped<IListService, ListsService>();
+
 builder.Services.AddFluentValidationAutoValidation();
 
 builder.Services.AddCors(p => p.AddPolicy("CORS", builder =>
@@ -56,11 +65,19 @@ builder.Services.AddCors(p => p.AddPolicy("CORS", builder =>
 
 // Add Validators
 
-builder.Services.AddScoped<IValidator, RegisterEmployeeDTOValidator>();
+builder.Services.AddScoped<IValidator<RegisterEmployeeDTO>, RegisterEmployeeDTOValidator>();
+builder.Services.AddScoped<IValidator<LoginEmployeeDTO>, LoginEmployeeDTOValidator>();
+builder.Services.AddScoped<IValidator<EmployeeDTO>, EmployeeDTOValidator>();
+builder.Services.AddScoped<IValidator<ChangeApprovalRequestStatusDTO>, ChangeApprovalRequestStatusDTOValidator>();
+builder.Services.AddScoped<IValidator<NewLeaveRequestDTO>, NewLeaveRequestDTOValidator>();
+builder.Services.AddScoped<IValidator<EditLeaveRequestDTO>, EditLeaveRequestDTOValidator>();
+builder.Services.AddScoped<IValidator<ChangeLeaveRequestStatusDTO>, ChangeLeaveRequestStatusDTOValidator>();
+
 
 // Add MiddleWare
-
 builder.Services.AddScoped<ErrorHandlingMiddleWare>();
+
+
 
 var app = builder.Build();
 

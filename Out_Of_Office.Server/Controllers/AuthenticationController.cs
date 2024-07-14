@@ -12,7 +12,7 @@ namespace Out_Of_Office.Server.Controllers
         private readonly IAuthenticationService _authenticationService = authenticationService;
 
         [HttpPost("register")]
-        public ActionResult RegisterEmployee(RegisterEmployeeDTO employeeDTO)
+        public ActionResult RegisterEmployee([FromBody]RegisterEmployeeDTO employeeDTO)
         {
             _authenticationService.RegisterEmployee(employeeDTO);
             return Ok();

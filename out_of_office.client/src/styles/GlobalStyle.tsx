@@ -25,7 +25,7 @@ h2{
 }
 
 h3{
-    font-size: ${theme.fontSizes.h2} ;
+    font-size: ${theme.fontSizes.h3} ;
 }
 
 a{
@@ -39,9 +39,14 @@ button {
 }
 
 body {
-    font-size: ${theme.fontSizes.textNormal};
+    font-size: ${theme.fontSizes.textSmall};
     font-family: ${theme.defaultFontFamily} ;
     color: ${theme.colors.black};
+}
+
+#root{
+    display: flex ;
+    flex-direction: column ;
     min-height: 100vh;
 }
 

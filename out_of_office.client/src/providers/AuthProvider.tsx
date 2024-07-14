@@ -41,6 +41,11 @@ const AuthProvider = (props: PropsWithChildren) => {
   const values = useMemo(
     () => ({
       login,
+      // user: {
+      //   fullName: storedValue?.fullName,
+      //   position: "Employee",
+      //   token: storedValue?.token,
+      // } as AuthenticatedUser,
       user: storedValue,
       logout,
     }),

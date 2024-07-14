@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Out_Of_Office.Server.Data;
 using Out_Of_Office.Server.Enums;
 using Out_Of_Office.Server.Models;
+using Out_Of_Office.Server.Utilities;
 using System.Text.RegularExpressions;
 
 namespace Out_Of_Office.Server.Validators
@@ -43,10 +44,11 @@ namespace Out_Of_Office.Server.Validators
 
             RuleFor(r => r.FullName).Custom((value, context) => 
             {
-                string pattern = @"^[a-zA-z]{2,}[ ][a-zA-z- ]{2,}$";
-                if (value != "" && value != null && !Regex.IsMatch(value, pattern))
+                string pattern = Utilities.Utilities.FULL_NAME_PATTERN;
+
+                if (value != "" && value != null && !Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase))
                 {
-                    context.AddFailure("Full Name", "Incorrect value");
+                    context.AddFailure("Full Name", "Format: Name Surname is required");
                 }
             });
 
@@ -61,9 +63,9 @@ namespace Out_Of_Office.Server.Validators
                 }
             });
 
-            RuleFor(r => r.Position)
+           /* RuleFor(r => r.Position)
                 .NotEmpty()
-                .WithMessage("Position is required");
+                .WithMessage("Position is required");*/
 
             RuleFor(r => r.Position).Custom((value, context) =>
             {
@@ -73,34 +75,6 @@ namespace Out_Of_Office.Server.Validators
                     context.AddFailure("Position", "Position does not exist");
                 }
             });
-
-            RuleFor(r => r.Status)
-               .NotEmpty()
-               .WithMessage("Status is required");
-
-            RuleFor(r => r.Status).Custom((value, context) =>
-            {
-                var statusExists = Enum.IsDefined(typeof(EStatus), value);
-                if (!statusExists)
-                {
-                    context.AddFailure("Status", "Status does not exist");
-                }
-            });
-
-            RuleFor(r => r.PeoplePartner)
-                .NotEmpty()
-                .WithMessage("People partner is required");
-
-            RuleFor(r => r.PeoplePartner).Custom((value, context) =>
-            {
-                var peopePartnerExists = _dataContext.Employees.Any(p => p.Id == value && p.Position == EPositions.HRManager );
-                if (!peopePartnerExists)
-                {
-                    context.AddFailure("People Partner", "People Partner does not exist");
-                }
-            });
-
         }
-
     }
 }
