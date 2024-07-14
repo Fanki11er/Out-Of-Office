@@ -35,6 +35,22 @@ namespace Out_Of_Office.Server.Controllers
             return Ok(result);
         }
 
+        [HttpPost("leaveRequestsEmployee")]
+        public ActionResult CreateNewEmployeeLeaveRequest([FromBody] NewLeaveRequestDTO newLeaveRequestDTO)
+        {
+            _listService.CreateNewEmployeeLeaveRequest(newLeaveRequestDTO);
+
+            return Ok();
+        }
+
+        [HttpPut("leaveRequestsEmployee")]
+        public ActionResult EditEmployeeLeaveRequest([FromBody] EditLeaveRequestDTO editLeaveRequestDTO)
+        {
+            _listService.EditEmployeeLeaveRequest(editLeaveRequestDTO);
+
+            return Ok();
+        }
+
         [HttpGet("approvalRequestsManagers")]
         public ActionResult<List<ApprovalRequestDTO>> GetHRManagerApprovalRequests()
         {

@@ -140,10 +140,10 @@ const LeaveRequestForm = ({
               predicate: (query) =>
                 query.queryKey[0] === LEAVE_REQUESTS_EMPLOYEE_KEY,
             });
+            handleCloseModal && handleCloseModal();
           },
         });
         setSubmitting(false);
-        handleCloseModal && handleCloseModal();
       }}
     >
       {({ errors }) => (
@@ -152,7 +152,11 @@ const LeaveRequestForm = ({
             <StyledFormError>{getErrorMessages(error)}</StyledFormError>
           )}
           {isSuccess && (
-            <StyledSuccessStatus>Status changed</StyledSuccessStatus>
+            <StyledSuccessStatus>
+              {formType === "New"
+                ? "Leave request created"
+                : "Leave request edited"}
+            </StyledSuccessStatus>
           )}
           <h2>Leave request</h2>
           {leaveRequest && <h3>{`Id: ${leaveRequest.id}`}</h3>}

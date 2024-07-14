@@ -20,6 +20,8 @@ namespace Out_Of_Office.Server.Services
         public List<ApprovalRequestDTO> GetHRManagerApprovalRequests();
         public List<ApprovalRequestDTO> GetEmployeeApprovalRequests();
         public List<LeaveRequestDTO> GetEmployeeLeaveRequests();
+        public void CreateNewEmployeeLeaveRequest(NewLeaveRequestDTO newLeaveRequestDTO);
+        public void EditEmployeeLeaveRequest(EditLeaveRequestDTO editLeaveRequestDTO);
         public List<ProjectDTO> GetHRManagerProjects();
         public List<ProjectDTO> GetEmployeeProjects();
         public void ChangeApprovalRequestStatus(ChangeApprovalRequestStatusDTO newStatusDTO);
@@ -189,6 +191,63 @@ namespace Out_Of_Office.Server.Services
                 }).ToList();
 
             return leaveRequestsDTOs;
+        }
+
+        public void CreateNewEmployeeLeaveRequest(NewLeaveRequestDTO newLeaveRequestDTO)
+        {
+            //var authenticatedUserId = _userContextService.GetUserId();
+
+            var authenticatedUserId = 4;
+
+            var newLeaveRequest = new LeaveRequest()
+            {
+                EmployeeId = authenticatedUserId,
+                AbsenceReasonId = newLeaveRequestDTO.AbsenceReason,
+                StartDate = DateOnly.Parse(newLeaveRequestDTO.StartDate),
+                EndDate = DateOnly.Parse(newLeaveRequestDTO.EndDate),
+                Comment = newLeaveRequestDTO.Comment?? "",
+            };
+
+            _dataContext.LeaveRequests.Add(newLeaveRequest);
+
+            Utilities.DatabaseUtilities.SaveChangesToDatabase(_dataContext);
+
+
+            if(newLeaveRequest.Id == 0)
+            {
+                throw new BadHttpRequestException("Problem with leave request occurred");
+            }
+
+            var newApprovalRequest = new ApprovalRequest()
+            {
+                LeaveRequestId = newLeaveRequest.Id,
+                Status = ERequestStatus.New,
+            };
+
+            _dataContext.ApprovalRequests.Add(newApprovalRequest);
+
+            Utilities.DatabaseUtilities.SaveChangesToDatabase(_dataContext);
+        }
+
+        public void EditEmployeeLeaveRequest(EditLeaveRequestDTO editLeaveRequestDTO)
+        {
+            var oldLeaveRequest = _dataContext.LeaveRequests
+                .FirstOrDefault(lr => lr.Id == editLeaveRequestDTO.LeaveRequestId) ??
+                throw new BadHttpRequestException("Leave request not found");
+
+            if (oldLeaveRequest.Status == ERequestStatus.Accepted || oldLeaveRequest.Status == ERequestStatus.Rejected)
+            {
+                throw new BadHttpRequestException("Accepted or Rejected leave request can not be edited");
+            }
+
+            oldLeaveRequest.StartDate = DateOnly.Parse(editLeaveRequestDTO.StartDate);
+            oldLeaveRequest.EndDate = DateOnly.Parse(editLeaveRequestDTO.EndDate);
+            oldLeaveRequest.AbsenceReasonId = editLeaveRequestDTO.AbsenceReason;
+            oldLeaveRequest.Comment = editLeaveRequestDTO.Comment ?? "";
+
+            _dataContext.LeaveRequests.Update(oldLeaveRequest);
+
+            Utilities.DatabaseUtilities.SaveChangesToDatabase(_dataContext);
         }
 
         public List<ApprovalRequestDTO> GetHRManagerApprovalRequests()
