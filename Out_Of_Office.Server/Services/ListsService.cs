@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using Out_Of_Office.Server.Data;
 using Out_Of_Office.Server.Entities;
 using Out_Of_Office.Server.Enums;
@@ -257,12 +258,17 @@ namespace Out_Of_Office.Server.Services
                 .ThenInclude(e => e!.Employee!)
                 .Where(ar => ar.LeaveRequest!.Employee!.PeoplePartnerId == authenticatedUserId);
 
+            var approver = _dataContext.Employees.FirstOrDefault(e => e.Id == authenticatedUserId) ??
+               throw new BadHttpRequestException("Approver not found");
+
             var approvalRequestsDtos = approvalRequests.Select(ar => new ApprovalRequestDTO()
             {
                 Id = ar.Id,
                 Status = ar.Status.ToString(),
                 Comment = ar.Comment,
-                LeaveRequest = ar.LeaveRequestId
+                LeaveRequest = ar.LeaveRequestId,
+                Approver = approver.FullName
+                
             }).ToList();
 
             return approvalRequestsDtos;
@@ -272,6 +278,9 @@ namespace Out_Of_Office.Server.Services
         {
             var authenticatedUserId = _userContextService.GetUserId();
 
+            var approver = _dataContext.Employees.FirstOrDefault(e => e.Id == authenticatedUserId) ??
+                throw new BadHttpRequestException("Approver not found");
+
             var approvalRequestsDTOs = _dataContext.ApprovalRequests
                 .Include(i => i.LeaveRequest)
                 .Where(ar => ar.LeaveRequest!.EmployeeId == authenticatedUserId)
@@ -280,7 +289,9 @@ namespace Out_Of_Office.Server.Services
                     Id = ar.Id,
                     Status = ar.Status.ToString(),
                     Comment = ar.Comment,
-                    LeaveRequest = ar.LeaveRequestId
+                    LeaveRequest = ar.LeaveRequestId,
+                    Approver =approver.FullName
+                    
                 }).ToList();
 
             return approvalRequestsDTOs;
@@ -349,7 +360,7 @@ namespace Out_Of_Office.Server.Services
             }
             else if(newStatusDTO.NewStatus == ERequestStatus.Rejected.ToString())
             {
-                RejectRequest(newStatusDTO.RequestId, newStatusDTO.Comment);
+                RejectRequest(newStatusDTO.RequestId, authenticatedUserId, newStatusDTO.Comment);
             }
             else
             {
@@ -459,7 +470,7 @@ namespace Out_Of_Office.Server.Services
             DatabaseUtilities.SaveChangesToDatabase(_dataContext);
         }
 
-        private void RejectRequest(int requestId, string? comment)
+        private void RejectRequest(int requestId, int approverId,string? comment)
         {
             var approvalRequest = _dataContext.ApprovalRequests.
                Include(i => i.LeaveRequest)
@@ -468,6 +479,7 @@ namespace Out_Of_Office.Server.Services
 
             approvalRequest.Status = ERequestStatus.Rejected;
             approvalRequest.LeaveRequest!.Status = ERequestStatus.Rejected;
+            approvalRequest.ApproverId = approverId;
             approvalRequest.Comment = comment ?? "";
 
             _dataContext.Update(approvalRequest);
